@@ -14,6 +14,63 @@ export type Database = {
   }
   public: {
     Tables: {
+      problems: {
+        Row: {
+          category: string
+          created_at: string
+          description: string
+          difficulty: Database["public"]["Enums"]["difficulty_level"]
+          hints: string[] | null
+          id: string
+          learning_path: string | null
+          slug: string
+          solution: Json | null
+          sort_order: number
+          starter_code: Json
+          tags: string[] | null
+          test_cases: Json
+          title: string
+          updated_at: string
+          xp: number
+        }
+        Insert: {
+          category: string
+          created_at?: string
+          description: string
+          difficulty?: Database["public"]["Enums"]["difficulty_level"]
+          hints?: string[] | null
+          id?: string
+          learning_path?: string | null
+          slug: string
+          solution?: Json | null
+          sort_order?: number
+          starter_code?: Json
+          tags?: string[] | null
+          test_cases?: Json
+          title: string
+          updated_at?: string
+          xp?: number
+        }
+        Update: {
+          category?: string
+          created_at?: string
+          description?: string
+          difficulty?: Database["public"]["Enums"]["difficulty_level"]
+          hints?: string[] | null
+          id?: string
+          learning_path?: string | null
+          slug?: string
+          solution?: Json | null
+          sort_order?: number
+          starter_code?: Json
+          tags?: string[] | null
+          test_cases?: Json
+          title?: string
+          updated_at?: string
+          xp?: number
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar_url: string | null
@@ -77,6 +134,59 @@ export type Database = {
         }
         Relationships: []
       }
+      user_progress: {
+        Row: {
+          attempts: number
+          code: string | null
+          created_at: string
+          id: string
+          language: string
+          problem_id: string
+          solved_at: string | null
+          status: string
+          time_spent_seconds: number | null
+          updated_at: string
+          user_id: string
+          xp_earned: number
+        }
+        Insert: {
+          attempts?: number
+          code?: string | null
+          created_at?: string
+          id?: string
+          language?: string
+          problem_id: string
+          solved_at?: string | null
+          status?: string
+          time_spent_seconds?: number | null
+          updated_at?: string
+          user_id: string
+          xp_earned?: number
+        }
+        Update: {
+          attempts?: number
+          code?: string | null
+          created_at?: string
+          id?: string
+          language?: string
+          problem_id?: string
+          solved_at?: string | null
+          status?: string
+          time_spent_seconds?: number | null
+          updated_at?: string
+          user_id?: string
+          xp_earned?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_progress_problem_id_fkey"
+            columns: ["problem_id"]
+            isOneToOne: false
+            referencedRelation: "problems"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
@@ -85,7 +195,7 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
-      [_ in never]: never
+      difficulty_level: "easy" | "medium" | "hard"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -212,6 +322,8 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      difficulty_level: ["easy", "medium", "hard"],
+    },
   },
 } as const
