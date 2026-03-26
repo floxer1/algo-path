@@ -134,7 +134,7 @@ const Profile = () => {
         </button>
 
         {/* Logout */}
-        <button className="w-full flex items-center gap-3 p-3 rounded-xl bg-card border border-border text-destructive">
+        <button onClick={async () => { await signOut(); navigate('/auth'); }} className="w-full flex items-center gap-3 p-3 rounded-xl bg-card border border-border text-destructive">
           <LogOut size={18} />
           <span className="flex-1 text-left text-sm">{t('profile.logout')}</span>
         </button>
