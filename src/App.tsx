@@ -12,6 +12,7 @@ import Duels from "./pages/Duels";
 import Profile from "./pages/Profile";
 import Exercise from "./pages/Exercise";
 import Auth from "./pages/Auth";
+import Visualizer from "./pages/Visualizer";
 import NotFound from "./pages/NotFound";
 import BottomNav from "./components/BottomNav";
 
@@ -38,6 +39,7 @@ const AppRoutes = () => {
         <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
         <Route path="/exercise/:id" element={<ProtectedRoute><Exercise /></ProtectedRoute>} />
         <Route path="/path/:id" element={<ProtectedRoute><Practice /></ProtectedRoute>} />
+        <Route path="/visualizer" element={<ProtectedRoute><Visualizer /></ProtectedRoute>} />
         <Route path="*" element={<NotFound />} />
       </Routes>
       {user && <BottomNav />}
