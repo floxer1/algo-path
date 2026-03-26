@@ -1,11 +1,12 @@
 import { useTranslation } from 'react-i18next';
 import { motion } from 'framer-motion';
-import { Settings, Download, Globe, Moon, Bell, LogOut, ChevronRight, Flame, Trophy, CheckCircle2, Wifi } from 'lucide-react';
+import { Settings, Download, Globe, Moon, Sun, Monitor, Bell, LogOut, ChevronRight, Flame, Trophy, CheckCircle2, Wifi } from 'lucide-react';
 import { mockUser, badges, languages } from '@/lib/mock-data';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import i18n from '@/lib/i18n';
+import { useTheme } from '@/hooks/use-theme';
 
 const Profile = () => {
   const { t } = useTranslation();
@@ -13,6 +14,7 @@ const Profile = () => {
   const navigate = useNavigate();
   const [showLanguages, setShowLanguages] = useState(false);
   const [lowData, setLowData] = useState(false);
+  const { theme, setTheme } = useTheme();
 
   const stats = [
     { label: t('profile.solved'), value: mockUser.solved, icon: CheckCircle2, color: 'text-primary' },
@@ -106,6 +108,32 @@ const Profile = () => {
             </div>
           </motion.div>
         )}
+
+        {/* Theme Selector */}
+        <div className="w-full p-3 rounded-xl bg-card border border-border">
+          <div className="flex items-center gap-3 mb-2">
+            <Moon size={18} className="text-muted-foreground" />
+            <span className="text-sm">{t('profile.theme')}</span>
+          </div>
+          <div className="flex gap-1 ml-8">
+            {([
+              { value: 'light' as const, icon: Sun, label: 'Light' },
+              { value: 'dark' as const, icon: Moon, label: 'Dark' },
+              { value: 'system' as const, icon: Monitor, label: 'Auto' },
+            ]).map(({ value, icon: Icon, label }) => (
+              <button
+                key={value}
+                onClick={() => setTheme(value)}
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium flex-1 justify-center transition-colors ${
+                  theme === value ? 'bg-primary text-primary-foreground' : 'bg-secondary text-muted-foreground'
+                }`}
+              >
+                <Icon size={13} />
+                {label}
+              </button>
+            ))}
+          </div>
+        </div>
 
         {/* Low Data Mode */}
         <button
