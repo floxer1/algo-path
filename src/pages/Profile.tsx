@@ -3,10 +3,14 @@ import { motion } from 'framer-motion';
 import { Settings, Download, Globe, Moon, Bell, LogOut, ChevronRight, Flame, Trophy, CheckCircle2, Wifi } from 'lucide-react';
 import { mockUser, badges, languages } from '@/lib/mock-data';
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from '@/contexts/AuthContext';
 import i18n from '@/lib/i18n';
 
 const Profile = () => {
   const { t } = useTranslation();
+  const { signOut } = useAuth();
+  const navigate = useNavigate();
   const [showLanguages, setShowLanguages] = useState(false);
   const [lowData, setLowData] = useState(false);
 
@@ -130,7 +134,7 @@ const Profile = () => {
         </button>
 
         {/* Logout */}
-        <button className="w-full flex items-center gap-3 p-3 rounded-xl bg-card border border-border text-destructive">
+        <button onClick={async () => { await signOut(); navigate('/auth'); }} className="w-full flex items-center gap-3 p-3 rounded-xl bg-card border border-border text-destructive">
           <LogOut size={18} />
           <span className="flex-1 text-left text-sm">{t('profile.logout')}</span>
         </button>
