@@ -9,6 +9,8 @@ import i18n from '@/lib/i18n';
 
 const Profile = () => {
   const { t } = useTranslation();
+  const { signOut } = useAuth();
+  const navigate = useNavigate();
   const [showLanguages, setShowLanguages] = useState(false);
   const [lowData, setLowData] = useState(false);
 
