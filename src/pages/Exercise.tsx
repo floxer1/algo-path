@@ -1,44 +1,84 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useParams, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { ArrowLeft, Play, Send, Bot, ChevronDown, CheckCircle2, XCircle } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
-import { exerciseDetail } from '@/lib/mock-data';
+import { ArrowLeft, Play, Send, Bot, ChevronDown, CheckCircle2, XCircle, Loader2 } from 'lucide-react';
+import { useProblem, useProgressForProblem, useSaveProgress } from '@/hooks/use-problems';
 import DifficultyBadge from '@/components/DifficultyBadge';
 
 const langOptions = ['javascript', 'python', 'java', 'cpp'] as const;
 
 const Exercise = () => {
   const { t } = useTranslation();
+  const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const { data: problem, isLoading } = useProblem(id || '');
+  const { data: existingProgress } = useProgressForProblem(id || '');
+  const saveProgress = useSaveProgress();
+
   const [selectedLang, setSelectedLang] = useState<string>('javascript');
-  const [code, setCode] = useState(exerciseDetail.starterCode.javascript);
-  const [testResults, setTestResults] = useState(exerciseDetail.testCases);
+  const [code, setCode] = useState('');
+  const [testResults, setTestResults] = useState<Array<{ input: string; expected: string; passed: boolean | null }>>([]);
   const [showAI, setShowAI] = useState(false);
   const [tab, setTab] = useState<'problem' | 'code'>('problem');
+
+  // Initialize code from problem data
+  useEffect(() => {
+    if (problem) {
+      const starterCode = problem.starter_code as Record<string, string>;
+      setCode(existingProgress?.code || starterCode[selectedLang] || '');
+      const cases = problem.test_cases as Array<{ input: string; expected: string }>;
+      setTestResults(cases.map(tc => ({ ...tc, passed: null })));
+    }
+  }, [problem, existingProgress]);
+
+  const handleLangChange = (lang: string) => {
+    setSelectedLang(lang);
+    if (problem) {
+      const starterCode = problem.starter_code as Record<string, string>;
+      setCode(starterCode[lang] || '');
+    }
+  };
 
   const handleRun = () => {
     setTestResults(prev => prev.map((tc, i) => ({
       ...tc,
-      passed: i < 2 ? true : false,
+      passed: i < 2,
     })));
   };
 
-  const handleLangChange = (lang: string) => {
-    setSelectedLang(lang);
-    setCode(exerciseDetail.starterCode[lang as keyof typeof exerciseDetail.starterCode] || '');
+  const handleSubmit = () => {
+    if (!problem) return;
+    saveProgress.mutate({
+      problem_id: problem.id,
+      code,
+      language: selectedLang,
+      status: 'attempted',
+      xp_earned: 0,
+    });
   };
+
+  if (isLoading || !problem) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <Loader2 className="w-8 h-8 animate-spin text-muted-foreground" />
+      </div>
+    );
+  }
+
+  const examples = (problem.description.match(/Example \d+[\s\S]*?(?=Example \d+|$)/g) || []).length > 0
+    ? [] // parsed from description if needed
+    : [];
 
   return (
     <div className="min-h-screen flex flex-col safe-top">
-      {/* Top bar */}
       <header className="flex items-center gap-3 px-4 py-3 border-b border-border">
         <button onClick={() => navigate(-1)}>
           <ArrowLeft size={20} />
         </button>
         <div className="flex-1 min-w-0">
-          <h1 className="text-sm font-bold truncate">{exerciseDetail.title}</h1>
-          <DifficultyBadge difficulty={exerciseDetail.difficulty} />
+          <h1 className="text-sm font-bold truncate">{problem.title}</h1>
+          <DifficultyBadge difficulty={problem.difficulty} />
         </div>
         <motion.button
           onClick={() => setShowAI(!showAI)}
@@ -49,7 +89,6 @@ const Exercise = () => {
         </motion.button>
       </header>
 
-      {/* Mobile tab switcher */}
       <div className="flex border-b border-border">
         <button
           onClick={() => setTab('problem')}
@@ -68,20 +107,10 @@ const Exercise = () => {
       <div className="flex-1 overflow-auto">
         {tab === 'problem' ? (
           <div className="p-4 space-y-4">
-            <p className="text-sm leading-relaxed whitespace-pre-line">{exerciseDetail.description}</p>
-            <div className="space-y-3">
-              {exerciseDetail.examples.map((ex, i) => (
-                <div key={i} className="bg-secondary rounded-xl p-3">
-                  <p className="text-xs text-muted-foreground mb-1">Example {i + 1}</p>
-                  <p className="text-sm font-mono"><span className="text-muted-foreground">Input: </span>{ex.input}</p>
-                  <p className="text-sm font-mono"><span className="text-muted-foreground">Output: </span>{ex.output}</p>
-                </div>
-              ))}
-            </div>
+            <p className="text-sm leading-relaxed whitespace-pre-line">{problem.description}</p>
           </div>
         ) : (
           <div className="flex flex-col h-full">
-            {/* Language selector */}
             <div className="flex items-center gap-2 px-4 py-2 border-b border-border overflow-x-auto no-scrollbar">
               {langOptions.map(lang => (
                 <button
@@ -96,7 +125,6 @@ const Exercise = () => {
               ))}
             </div>
 
-            {/* Code editor */}
             <div className="flex-1 p-2">
               <textarea
                 value={code}
@@ -106,7 +134,6 @@ const Exercise = () => {
               />
             </div>
 
-            {/* Test Results */}
             <div className="px-4 pb-2">
               <p className="text-xs font-semibold text-muted-foreground mb-2">{t('practice.testCases')}</p>
               <div className="space-y-1">
@@ -125,7 +152,6 @@ const Exercise = () => {
               </div>
             </div>
 
-            {/* Action buttons */}
             <div className="flex gap-2 p-4 border-t border-border">
               <motion.button
                 onClick={handleRun}
@@ -136,8 +162,10 @@ const Exercise = () => {
                 {t('practice.runCode')}
               </motion.button>
               <motion.button
+                onClick={handleSubmit}
                 className="flex-1 flex items-center justify-center gap-2 py-2.5 bg-primary text-primary-foreground rounded-xl text-sm font-bold"
                 whileTap={{ scale: 0.97 }}
+                disabled={saveProgress.isPending}
               >
                 <Send size={14} />
                 {t('practice.submit')}
@@ -147,7 +175,6 @@ const Exercise = () => {
         )}
       </div>
 
-      {/* AI Coach Panel */}
       {showAI && (
         <motion.div
           initial={{ y: '100%' }}
@@ -174,11 +201,11 @@ const Exercise = () => {
               </button>
             ))}
           </div>
-          <div className="mt-4 p-3 bg-xp/5 border border-xp/20 rounded-xl">
-            <p className="text-sm text-muted-foreground">
-              💡 Try using a <strong>stack</strong> data structure. Push opening brackets and pop when you find a matching closing bracket.
-            </p>
-          </div>
+          {problem.hints && problem.hints.length > 0 && (
+            <div className="mt-4 p-3 bg-xp/5 border border-xp/20 rounded-xl">
+              <p className="text-sm text-muted-foreground">💡 {problem.hints[0]}</p>
+            </div>
+          )}
         </motion.div>
       )}
     </div>

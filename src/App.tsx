@@ -4,6 +4,7 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { AuthProvider, useAuth } from "@/contexts/AuthContext";
+import { useOnlineSync } from "@/hooks/use-online-sync";
 import '@/lib/i18n';
 import Index from "./pages/Index";
 import Practice from "./pages/Practice";
@@ -27,6 +28,7 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
 
 const AppRoutes = () => {
   const { user } = useAuth();
+  useOnlineSync();
 
   return (
     <div className="max-w-lg mx-auto min-h-screen relative">
