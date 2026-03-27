@@ -154,6 +154,17 @@ const Practice = () => {
             </SelectContent>
           </Select>
 
+          <Select value={status} onValueChange={setStatus}>
+            <SelectTrigger className="w-[140px] h-9 text-sm">
+              <SelectValue placeholder="Status" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Status</SelectItem>
+              <SelectItem value="solved">Solved</SelectItem>
+              <SelectItem value="unsolved">Unsolved</SelectItem>
+            </SelectContent>
+          </Select>
+
           <Select value={learningPath} onValueChange={setLearningPath}>
             <SelectTrigger className="w-[160px] h-9 text-sm">
               <SelectValue placeholder="Learning Path" />
