@@ -1,31 +1,95 @@
 <!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1" />
-    <meta name="theme-color" content="#22b573" />
-    <meta name="apple-mobile-web-app-capable" content="yes" />
-    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
-    <meta name="description" content="AlgoTrainer - Master algorithms through interactive exercises, duels, and AI coaching. The Duolingo of algorithms." />
-    <link rel="manifest" href="/manifest.json" />
-    <!-- TODO: Set the document title to the name of your application -->
-    <title>Lovable App</title>
-    <meta name="description" content="Lovable Generated Project" />
-    <meta name="author" content="Lovable" />
+<head>
 
-    <!-- TODO: Update og:title to match your application name -->
-    <meta property="og:title" content="Lovable App" />
-    <meta property="og:description" content="Lovable Generated Project" />
-    <meta property="og:type" content="website" />
-    <meta property="og:image" content="https://lovable.dev/opengraph-image-p98pqg.png" />
+  <!-- Charset -->
+  <meta charset="UTF-8" />
 
-    <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:site" content="@Lovable" />
-    <meta name="twitter:image" content="https://lovable.dev/opengraph-image-p98pqg.png" />
-  </head>
+  <!-- Mobile First -->
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1" />
 
-  <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.tsx"></script>
-  </body>
+  <!-- Title SEO -->
+  <title>AlgoTrainer | Learn Algorithms with AI, Duels & Interactive Challenges</title>
+
+  <!-- SEO Meta -->
+  <meta name="description"
+        content="AlgoTrainer helps developers master algorithms through interactive coding challenges, AI coaching, and competitive duels. Learn algorithms the fun way." />
+
+  <meta name="keywords"
+        content="algorithms training, learn algorithms, coding challenges, programming exercises, algorithm practice, coding duel, developers training, data structures" />
+
+  <meta name="author" content="AlgoTrainer Team" />
+
+  <!-- Canonical -->
+  <link rel="canonical" href="https://algotrainer.vercel.app//" />
+
+  <!-- PWA -->
+  <link rel="manifest" href="/manifest.json" />
+  <meta name="theme-color" content="#22b573" />
+
+  <!-- Apple PWA -->
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <meta name="apple-mobile-web-app-title" content="AlgoTrainer" />
+
+  <!-- Icons -->
+  <link rel="apple-touch-icon" href="/icons/icon-192.png" />
+
+  <!-- OpenGraph (Facebook, LinkedIn, WhatsApp) -->
+  <meta property="og:type" content="website" />
+  <meta property="og:title"
+        content="AlgoTrainer – The Duolingo of Algorithms" />
+  <meta property="og:description"
+        content="Master algorithms with AI coaching, coding challenges, and real-time duels." />
+  <meta property="og:image"
+        content="https://algotrainer.vercel.app//og-image.png" />
+  <meta property="og:url"
+        content="https://algotrainer.vercel.app//" />
+  <meta property="og:site_name"
+        content="AlgoTrainer" />
+
+  <!-- Twitter -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title"
+        content="AlgoTrainer – Learn Algorithms Faster" />
+  <meta name="twitter:description"
+        content="Interactive algorithm training with AI and coding duels." />
+  <meta name="twitter:image"
+        content="https://algotrainer.vercel.app//og-image.png" />
+
+  <!-- Multilingual SEO -->
+  <link rel="alternate" hreflang="en" href="https://algotrainer.vercel.app//en" />
+  <link rel="alternate" hreflang="fr" href="https://algotrainer.vercel.app//fr" />
+
+  <!-- Performance -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+
+  <!-- Structured Data SEO (Google) -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    "name": "AlgoTrainer",
+    "applicationCategory": "DeveloperApplication",
+    "operatingSystem": "Web",
+    "description": "Interactive platform to learn algorithms through AI coaching, coding challenges and duels.",
+    "url": "https://algotrainer.vercel.app/",
+    "offers": {
+      "@type": "Offer",
+      "price": "0",
+      "priceCurrency": "USD"
+    }
+  }
+  </script>
+
+</head>
+
+<body>
+
+  <div id="root"></div>
+
+  <script type="module" src="/src/main.tsx"></script>
+
+</body>
 </html>
