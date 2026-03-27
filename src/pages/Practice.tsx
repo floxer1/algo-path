@@ -5,6 +5,7 @@ import { Link } from 'react-router-dom';
 import { CheckCircle2, Circle, Loader2, Search, X, SlidersHorizontal, ArrowUpDown } from 'lucide-react';
 import { useProblems, useUserProgress } from '@/hooks/use-problems';
 import DifficultyBadge from '@/components/DifficultyBadge';
+import CategoryProgress from '@/components/CategoryProgress';
 import { Input } from '@/components/ui/input';
 import {
   Select,
@@ -119,6 +120,17 @@ const Practice = () => {
         </div>
         <p className="text-xs text-muted-foreground mt-1">{completionPercent}% complete</p>
       </header>
+
+      {/* Category progress */}
+      {!isLoading && categories.length > 0 && (
+        <CategoryProgress
+          categories={categories}
+          problems={problems}
+          solvedIds={solvedIds}
+          onCategoryClick={setCategory}
+          activeCategory={category}
+        />
+      )}
 
       {/* Search bar */}
       <div className="px-4 mb-3 flex gap-2">
