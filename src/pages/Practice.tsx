@@ -22,6 +22,7 @@ const Practice = () => {
   const [search, setSearch] = useState('');
   const [category, setCategory] = useState<string>('all');
   const [learningPath, setLearningPath] = useState<string>('all');
+  const [status, setStatus] = useState<string>('all');
   const [showFilters, setShowFilters] = useState(false);
   const { data: problems = [], isLoading } = useProblems();
   const { data: progress = [] } = useUserProgress();
