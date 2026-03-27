@@ -5,6 +5,7 @@ import { Link } from 'react-router-dom';
 import { CheckCircle2, Circle, Loader2, Search, X, SlidersHorizontal, ArrowUpDown } from 'lucide-react';
 import { useProblems, useUserProgress } from '@/hooks/use-problems';
 import DifficultyBadge from '@/components/DifficultyBadge';
+import CategoryProgress from '@/components/CategoryProgress';
 import { Input } from '@/components/ui/input';
 import {
   Select,
