@@ -16,6 +16,9 @@ import {
 
 const difficulties = ['allProblems', 'easy', 'medium', 'hard'] as const;
 
+type SortOption = 'default' | 'name-asc' | 'name-desc' | 'xp-asc' | 'xp-desc' | 'difficulty-asc' | 'difficulty-desc';
+const difficultyOrder = { easy: 0, medium: 1, hard: 2 };
+
 const Practice = () => {
   const { t } = useTranslation();
   const [activeFilter, setActiveFilter] = useState<string>('allProblems');
