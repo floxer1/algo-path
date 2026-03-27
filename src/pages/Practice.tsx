@@ -121,6 +121,17 @@ const Practice = () => {
         <p className="text-xs text-muted-foreground mt-1">{completionPercent}% complete</p>
       </header>
 
+      {/* Category progress */}
+      {!isLoading && categories.length > 0 && (
+        <CategoryProgress
+          categories={categories}
+          problems={problems}
+          solvedIds={solvedIds}
+          onCategoryClick={setCategory}
+          activeCategory={category}
+        />
+      )}
+
       {/* Search bar */}
       <div className="px-4 mb-3 flex gap-2">
         <div className="relative flex-1">
