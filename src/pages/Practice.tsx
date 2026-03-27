@@ -22,6 +22,7 @@ const Practice = () => {
   const [search, setSearch] = useState('');
   const [category, setCategory] = useState<string>('all');
   const [learningPath, setLearningPath] = useState<string>('all');
+  const [status, setStatus] = useState<string>('all');
   const [showFilters, setShowFilters] = useState(false);
   const { data: problems = [], isLoading } = useProblems();
   const { data: progress = [] } = useUserProgress();
@@ -48,6 +49,11 @@ const Practice = () => {
     if (learningPath !== 'all') {
       result = result.filter(p => p.learning_path === learningPath);
     }
+    if (status === 'solved') {
+      result = result.filter(p => solvedIds.has(p.id));
+    } else if (status === 'unsolved') {
+      result = result.filter(p => !solvedIds.has(p.id));
+    }
     if (search.trim()) {
       const q = search.toLowerCase();
       result = result.filter(
@@ -58,16 +64,17 @@ const Practice = () => {
       );
     }
     return result;
-  }, [problems, activeFilter, category, learningPath, search]);
+  }, [problems, activeFilter, category, learningPath, status, search, solvedIds]);
 
   const activeFilterCount =
-    (category !== 'all' ? 1 : 0) + (learningPath !== 'all' ? 1 : 0);
+    (category !== 'all' ? 1 : 0) + (learningPath !== 'all' ? 1 : 0) + (status !== 'all' ? 1 : 0);
 
   const clearAll = () => {
     setActiveFilter('allProblems');
     setSearch('');
     setCategory('all');
     setLearningPath('all');
+    setStatus('all');
   };
 
   return (
@@ -144,6 +151,17 @@ const Practice = () => {
               {categories.map(c => (
                 <SelectItem key={c} value={c}>{c}</SelectItem>
               ))}
+            </SelectContent>
+          </Select>
+
+          <Select value={status} onValueChange={setStatus}>
+            <SelectTrigger className="w-[140px] h-9 text-sm">
+              <SelectValue placeholder="Status" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Status</SelectItem>
+              <SelectItem value="solved">Solved</SelectItem>
+              <SelectItem value="unsolved">Unsolved</SelectItem>
             </SelectContent>
           </Select>
 
