@@ -49,6 +49,11 @@ const Practice = () => {
     if (learningPath !== 'all') {
       result = result.filter(p => p.learning_path === learningPath);
     }
+    if (status === 'solved') {
+      result = result.filter(p => solvedIds.has(p.id));
+    } else if (status === 'unsolved') {
+      result = result.filter(p => !solvedIds.has(p.id));
+    }
     if (search.trim()) {
       const q = search.toLowerCase();
       result = result.filter(
@@ -59,16 +64,17 @@ const Practice = () => {
       );
     }
     return result;
-  }, [problems, activeFilter, category, learningPath, search]);
+  }, [problems, activeFilter, category, learningPath, status, search, solvedIds]);
 
   const activeFilterCount =
-    (category !== 'all' ? 1 : 0) + (learningPath !== 'all' ? 1 : 0);
+    (category !== 'all' ? 1 : 0) + (learningPath !== 'all' ? 1 : 0) + (status !== 'all' ? 1 : 0);
 
   const clearAll = () => {
     setActiveFilter('allProblems');
     setSearch('');
     setCategory('all');
     setLearningPath('all');
+    setStatus('all');
   };
 
   return (
