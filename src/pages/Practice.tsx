@@ -96,10 +96,28 @@ const Practice = () => {
     setSortBy('default');
   };
 
+  const solvedCount = problems.filter(p => solvedIds.has(p.id)).length;
+  const totalCount = problems.length;
+  const completionPercent = totalCount > 0 ? Math.round((solvedCount / totalCount) * 100) : 0;
+
   return (
     <div className="min-h-screen pb-24 safe-top">
       <header className="px-4 pt-4 pb-3">
-        <h1 className="text-xl font-bold">{t('practice.title')}</h1>
+        <div className="flex items-center justify-between mb-2">
+          <h1 className="text-xl font-bold">{t('practice.title')}</h1>
+          <span className="text-xs font-mono text-muted-foreground">
+            {solvedCount}/{totalCount} solved
+          </span>
+        </div>
+        <div className="h-2 bg-secondary rounded-full overflow-hidden">
+          <motion.div
+            className="h-full bg-primary rounded-full"
+            initial={{ width: 0 }}
+            animate={{ width: `${completionPercent}%` }}
+            transition={{ duration: 0.8, ease: 'easeOut' }}
+          />
+        </div>
+        <p className="text-xs text-muted-foreground mt-1">{completionPercent}% complete</p>
       </header>
 
       {/* Search bar */}
