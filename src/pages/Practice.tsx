@@ -67,8 +67,22 @@ const Practice = () => {
           (p.tags && p.tags.some(tag => tag.toLowerCase().includes(q)))
       );
     }
+    // Sort
+    if (sortBy !== 'default') {
+      result = [...result].sort((a, b) => {
+        switch (sortBy) {
+          case 'name-asc': return a.title.localeCompare(b.title);
+          case 'name-desc': return b.title.localeCompare(a.title);
+          case 'xp-asc': return a.xp - b.xp;
+          case 'xp-desc': return b.xp - a.xp;
+          case 'difficulty-asc': return difficultyOrder[a.difficulty] - difficultyOrder[b.difficulty];
+          case 'difficulty-desc': return difficultyOrder[b.difficulty] - difficultyOrder[a.difficulty];
+          default: return 0;
+        }
+      });
+    }
     return result;
-  }, [problems, activeFilter, category, learningPath, status, search, solvedIds]);
+  }, [problems, activeFilter, category, learningPath, status, search, solvedIds, sortBy]);
 
   const activeFilterCount =
     (category !== 'all' ? 1 : 0) + (learningPath !== 'all' ? 1 : 0) + (status !== 'all' ? 1 : 0);
