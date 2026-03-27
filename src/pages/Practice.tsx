@@ -85,7 +85,7 @@ const Practice = () => {
   }, [problems, activeFilter, category, learningPath, status, search, solvedIds, sortBy]);
 
   const activeFilterCount =
-    (category !== 'all' ? 1 : 0) + (learningPath !== 'all' ? 1 : 0) + (status !== 'all' ? 1 : 0);
+    (category !== 'all' ? 1 : 0) + (learningPath !== 'all' ? 1 : 0) + (status !== 'all' ? 1 : 0) + (sortBy !== 'default' ? 1 : 0);
 
   const clearAll = () => {
     setActiveFilter('allProblems');
@@ -93,6 +93,7 @@ const Practice = () => {
     setCategory('all');
     setLearningPath('all');
     setStatus('all');
+    setSortBy('default');
   };
 
   return (
