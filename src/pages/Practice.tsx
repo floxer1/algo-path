@@ -2,7 +2,7 @@ import { useState, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
-import { CheckCircle2, Circle, Loader2, Search, X, SlidersHorizontal } from 'lucide-react';
+import { CheckCircle2, Circle, Loader2, Search, X, SlidersHorizontal, ArrowUpDown } from 'lucide-react';
 import { useProblems, useUserProgress } from '@/hooks/use-problems';
 import DifficultyBadge from '@/components/DifficultyBadge';
 import { Input } from '@/components/ui/input';
@@ -16,6 +16,9 @@ import {
 
 const difficulties = ['allProblems', 'easy', 'medium', 'hard'] as const;
 
+type SortOption = 'default' | 'name-asc' | 'name-desc' | 'xp-asc' | 'xp-desc' | 'difficulty-asc' | 'difficulty-desc';
+const difficultyOrder = { easy: 0, medium: 1, hard: 2 };
+
 const Practice = () => {
   const { t } = useTranslation();
   const [activeFilter, setActiveFilter] = useState<string>('allProblems');
@@ -23,6 +26,7 @@ const Practice = () => {
   const [category, setCategory] = useState<string>('all');
   const [learningPath, setLearningPath] = useState<string>('all');
   const [status, setStatus] = useState<string>('all');
+  const [sortBy, setSortBy] = useState<SortOption>('default');
   const [showFilters, setShowFilters] = useState(false);
   const { data: problems = [], isLoading } = useProblems();
   const { data: progress = [] } = useUserProgress();
@@ -63,11 +67,25 @@ const Practice = () => {
           (p.tags && p.tags.some(tag => tag.toLowerCase().includes(q)))
       );
     }
+    // Sort
+    if (sortBy !== 'default') {
+      result = [...result].sort((a, b) => {
+        switch (sortBy) {
+          case 'name-asc': return a.title.localeCompare(b.title);
+          case 'name-desc': return b.title.localeCompare(a.title);
+          case 'xp-asc': return a.xp - b.xp;
+          case 'xp-desc': return b.xp - a.xp;
+          case 'difficulty-asc': return difficultyOrder[a.difficulty] - difficultyOrder[b.difficulty];
+          case 'difficulty-desc': return difficultyOrder[b.difficulty] - difficultyOrder[a.difficulty];
+          default: return 0;
+        }
+      });
+    }
     return result;
-  }, [problems, activeFilter, category, learningPath, status, search, solvedIds]);
+  }, [problems, activeFilter, category, learningPath, status, search, solvedIds, sortBy]);
 
   const activeFilterCount =
-    (category !== 'all' ? 1 : 0) + (learningPath !== 'all' ? 1 : 0) + (status !== 'all' ? 1 : 0);
+    (category !== 'all' ? 1 : 0) + (learningPath !== 'all' ? 1 : 0) + (status !== 'all' ? 1 : 0) + (sortBy !== 'default' ? 1 : 0);
 
   const clearAll = () => {
     setActiveFilter('allProblems');
@@ -75,6 +93,7 @@ const Practice = () => {
     setCategory('all');
     setLearningPath('all');
     setStatus('all');
+    setSortBy('default');
   };
 
   return (
@@ -176,6 +195,22 @@ const Practice = () => {
                   {lp!.charAt(0).toUpperCase() + lp!.slice(1)}
                 </SelectItem>
               ))}
+            </SelectContent>
+          </Select>
+
+          <Select value={sortBy} onValueChange={v => setSortBy(v as SortOption)}>
+            <SelectTrigger className="w-[160px] h-9 text-sm">
+              <ArrowUpDown className="w-3.5 h-3.5 mr-1.5 flex-shrink-0" />
+              <SelectValue placeholder="Sort by" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="default">Default order</SelectItem>
+              <SelectItem value="name-asc">Name A→Z</SelectItem>
+              <SelectItem value="name-desc">Name Z→A</SelectItem>
+              <SelectItem value="difficulty-asc">Easiest first</SelectItem>
+              <SelectItem value="difficulty-desc">Hardest first</SelectItem>
+              <SelectItem value="xp-asc">XP: Low→High</SelectItem>
+              <SelectItem value="xp-desc">XP: High→Low</SelectItem>
             </SelectContent>
           </Select>
 
