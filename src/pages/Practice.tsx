@@ -198,6 +198,22 @@ const Practice = () => {
             </SelectContent>
           </Select>
 
+          <Select value={sortBy} onValueChange={v => setSortBy(v as SortOption)}>
+            <SelectTrigger className="w-[160px] h-9 text-sm">
+              <ArrowUpDown className="w-3.5 h-3.5 mr-1.5 flex-shrink-0" />
+              <SelectValue placeholder="Sort by" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="default">Default order</SelectItem>
+              <SelectItem value="name-asc">Name A→Z</SelectItem>
+              <SelectItem value="name-desc">Name Z→A</SelectItem>
+              <SelectItem value="difficulty-asc">Easiest first</SelectItem>
+              <SelectItem value="difficulty-desc">Hardest first</SelectItem>
+              <SelectItem value="xp-asc">XP: Low→High</SelectItem>
+              <SelectItem value="xp-desc">XP: High→Low</SelectItem>
+            </SelectContent>
+          </Select>
+
           {activeFilterCount > 0 && (
             <button
               onClick={clearAll}
