@@ -2,7 +2,7 @@ import { useState, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
-import { CheckCircle2, Circle, Loader2, Search, X, SlidersHorizontal } from 'lucide-react';
+import { CheckCircle2, Circle, Loader2, Search, X, SlidersHorizontal, ArrowUpDown } from 'lucide-react';
 import { useProblems, useUserProgress } from '@/hooks/use-problems';
 import DifficultyBadge from '@/components/DifficultyBadge';
 import { Input } from '@/components/ui/input';
