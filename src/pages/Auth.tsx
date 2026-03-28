@@ -39,14 +39,24 @@ const Auth = () => {
     }
   };
 
+  const isLovableDomain = window.location.hostname.endsWith('.lovable.app');
+
   const handleGoogleAuth = async () => {
     setLoading(true);
     try {
-      const result = await lovable.auth.signInWithOAuth('google', {
-        redirect_uri: window.location.origin,
-      });
-      if (result.error) {
-        toast.error(result.error.message || 'Google login failed');
+      if (isLovableDomain) {
+        const result = await lovable.auth.signInWithOAuth('google', {
+          redirect_uri: window.location.origin,
+        });
+        if (result.error) {
+          toast.error(result.error.message || 'Google login failed');
+        }
+      } else {
+        const { error } = await supabase.auth.signInWithOAuth({
+          provider: 'google',
+          options: { redirectTo: window.location.origin },
+        });
+        if (error) throw error;
       }
     } catch (err: any) {
       toast.error(err.message || 'Google login failed');
