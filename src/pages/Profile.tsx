@@ -11,16 +11,35 @@ import { useTheme } from '@/hooks/use-theme';
 
 const Profile = () => {
   const { t } = useTranslation();
-  const { signOut } = useAuth();
+  const { signOut, user } = useAuth();
   const navigate = useNavigate();
   const [showLanguages, setShowLanguages] = useState(false);
   const [lowData, setLowData] = useState(false);
   const { theme, setTheme } = useTheme();
+  const [profile, setProfile] = useState<any>(null);
+
+  useEffect(() => {
+    if (!user) return;
+    supabase
+      .from('profiles')
+      .select('*')
+      .eq('user_id', user.id)
+      .single()
+      .then(({ data }) => { if (data) setProfile(data); });
+  }, [user]);
+
+  const displayName = profile?.display_name || user?.user_metadata?.full_name || user?.email?.split('@')[0] || mockUser.name;
+  const avatarUrl = profile?.avatar_url || user?.user_metadata?.avatar_url || user?.user_metadata?.picture;
+  const xp = profile?.xp ?? mockUser.xp;
+  const level = profile?.level ?? mockUser.level;
+  const solved = profile?.problems_solved ?? mockUser.solved;
+  const streak = profile?.streak ?? mockUser.streak;
+  const rank = profile?.rank ?? mockUser.rank;
 
   const stats = [
-    { label: t('profile.solved'), value: mockUser.solved, icon: CheckCircle2, color: 'text-primary' },
-    { label: t('profile.rank'), value: `#${mockUser.rank}`, icon: Trophy, color: 'text-accent' },
-    { label: t('profile.streak'), value: `${mockUser.streak}d`, icon: Flame, color: 'text-streak' },
+    { label: t('profile.solved'), value: solved, icon: CheckCircle2, color: 'text-primary' },
+    { label: t('profile.rank'), value: `#${rank}`, icon: Trophy, color: 'text-accent' },
+    { label: t('profile.streak'), value: `${streak}d`, icon: Flame, color: 'text-streak' },
   ];
 
   return (
