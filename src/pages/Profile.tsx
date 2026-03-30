@@ -1,6 +1,6 @@
 import { useTranslation } from 'react-i18next';
 import { motion } from 'framer-motion';
-import { Settings, Download, Globe, Moon, Sun, Monitor, Bell, LogOut, ChevronRight, Flame, Trophy, CheckCircle2, Wifi } from 'lucide-react';
+import { Settings, Download, Globe, Moon, Sun, Monitor, Bell, LogOut, ChevronRight, Flame, Trophy, CheckCircle2, Wifi, Pencil, X, Check, Loader2 } from 'lucide-react';
 import { mockUser, badges, languages } from '@/lib/mock-data';
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -8,6 +8,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import i18n from '@/lib/i18n';
 import { useTheme } from '@/hooks/use-theme';
+import { toast } from 'sonner';
 
 const Profile = () => {
   const { t } = useTranslation();
@@ -17,6 +18,10 @@ const Profile = () => {
   const [lowData, setLowData] = useState(false);
   const { theme, setTheme } = useTheme();
   const [profile, setProfile] = useState<any>(null);
+  const [editing, setEditing] = useState(false);
+  const [editName, setEditName] = useState('');
+  const [editBio, setEditBio] = useState('');
+  const [saving, setSaving] = useState(false);
 
   useEffect(() => {
     if (!user) return;
@@ -25,7 +30,13 @@ const Profile = () => {
       .select('*')
       .eq('user_id', user.id)
       .single()
-      .then(({ data }) => { if (data) setProfile(data); });
+      .then(({ data }) => {
+        if (data) {
+          setProfile(data);
+          setEditName(data.display_name || '');
+          setEditBio(data.bio || '');
+        }
+      });
   }, [user]);
 
   const displayName = profile?.display_name || user?.user_metadata?.full_name || user?.email?.split('@')[0] || mockUser.name;
@@ -35,6 +46,29 @@ const Profile = () => {
   const solved = profile?.problems_solved ?? mockUser.solved;
   const streak = profile?.streak ?? mockUser.streak;
   const rank = profile?.rank ?? mockUser.rank;
+
+  const handleStartEdit = () => {
+    setEditName(profile?.display_name || displayName);
+    setEditBio(profile?.bio || '');
+    setEditing(true);
+  };
+
+  const handleSave = async () => {
+    if (!user || !profile) return;
+    setSaving(true);
+    const { error } = await supabase
+      .from('profiles')
+      .update({ display_name: editName.trim(), bio: editBio.trim() })
+      .eq('user_id', user.id);
+    setSaving(false);
+    if (error) {
+      toast.error('Erreur lors de la sauvegarde');
+      return;
+    }
+    setProfile({ ...profile, display_name: editName.trim(), bio: editBio.trim() });
+    setEditing(false);
+    toast.success('Profil mis à jour');
+  };
 
   const stats = [
     { label: t('profile.solved'), value: solved, icon: CheckCircle2, color: 'text-primary' },
@@ -50,19 +84,69 @@ const Profile = () => {
 
       {/* Avatar & Info */}
       <div className="px-4 mb-6">
-        <div className="flex items-center gap-4">
-          {avatarUrl ? (
-            <img src={avatarUrl} alt={displayName} className="w-16 h-16 rounded-2xl object-cover" referrerPolicy="no-referrer" />
-          ) : (
-            <div className="w-16 h-16 rounded-2xl bg-primary/10 flex items-center justify-center text-3xl">
-              {mockUser.avatar}
+        {editing ? (
+          <motion.div
+            initial={{ opacity: 0, y: -8 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="bg-card border border-border rounded-xl p-4 space-y-3"
+          >
+            <div className="flex items-center justify-between mb-1">
+              <span className="text-sm font-semibold">Modifier le profil</span>
+              <button onClick={() => setEditing(false)} className="text-muted-foreground">
+                <X size={18} />
+              </button>
             </div>
-          )}
-          <div>
-            <h2 className="text-lg font-bold">{displayName}</h2>
-            <p className="text-sm text-muted-foreground">{t('home.level', { level })} • {xp} XP</p>
+            <div>
+              <label className="text-xs text-muted-foreground mb-1 block">Nom d'affichage</label>
+              <input
+                value={editName}
+                onChange={e => setEditName(e.target.value)}
+                maxLength={50}
+                className="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+              />
+            </div>
+            <div>
+              <label className="text-xs text-muted-foreground mb-1 block">Bio</label>
+              <textarea
+                value={editBio}
+                onChange={e => setEditBio(e.target.value)}
+                maxLength={160}
+                rows={3}
+                className="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-ring"
+                placeholder="Décris-toi en quelques mots..."
+              />
+              <p className="text-[10px] text-muted-foreground text-right mt-0.5">{editBio.length}/160</p>
+            </div>
+            <button
+              onClick={handleSave}
+              disabled={saving || !editName.trim()}
+              className="w-full flex items-center justify-center gap-2 py-2 rounded-lg bg-primary text-primary-foreground text-sm font-medium disabled:opacity-50"
+            >
+              {saving ? <Loader2 size={16} className="animate-spin" /> : <Check size={16} />}
+              Enregistrer
+            </button>
+          </motion.div>
+        ) : (
+          <div className="flex items-center gap-4">
+            {avatarUrl ? (
+              <img src={avatarUrl} alt={displayName} className="w-16 h-16 rounded-2xl object-cover" referrerPolicy="no-referrer" />
+            ) : (
+              <div className="w-16 h-16 rounded-2xl bg-primary/10 flex items-center justify-center text-3xl">
+                {mockUser.avatar}
+              </div>
+            )}
+            <div className="flex-1 min-w-0">
+              <div className="flex items-center gap-2">
+                <h2 className="text-lg font-bold truncate">{displayName}</h2>
+                <button onClick={handleStartEdit} className="text-muted-foreground hover:text-primary transition-colors">
+                  <Pencil size={14} />
+                </button>
+              </div>
+              {profile?.bio && <p className="text-xs text-muted-foreground line-clamp-2 mt-0.5">{profile.bio}</p>}
+              <p className="text-sm text-muted-foreground">{t('home.level', { level })} • {xp} XP</p>
+            </div>
           </div>
-        </div>
+        )}
       </div>
 
       {/* Stats */}
