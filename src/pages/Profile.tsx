@@ -51,12 +51,16 @@ const Profile = () => {
       {/* Avatar & Info */}
       <div className="px-4 mb-6">
         <div className="flex items-center gap-4">
-          <div className="w-16 h-16 rounded-2xl bg-primary/10 flex items-center justify-center text-3xl">
-            {mockUser.avatar}
-          </div>
+          {avatarUrl ? (
+            <img src={avatarUrl} alt={displayName} className="w-16 h-16 rounded-2xl object-cover" referrerPolicy="no-referrer" />
+          ) : (
+            <div className="w-16 h-16 rounded-2xl bg-primary/10 flex items-center justify-center text-3xl">
+              {mockUser.avatar}
+            </div>
+          )}
           <div>
-            <h2 className="text-lg font-bold">{mockUser.name}</h2>
-            <p className="text-sm text-muted-foreground">{t('home.level', { level: mockUser.level })} • {mockUser.xp} XP</p>
+            <h2 className="text-lg font-bold">{displayName}</h2>
+            <p className="text-sm text-muted-foreground">{t('home.level', { level })} • {xp} XP</p>
           </div>
         </div>
       </div>
