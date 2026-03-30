@@ -2,24 +2,44 @@ import { useTranslation } from 'react-i18next';
 import { motion } from 'framer-motion';
 import { Settings, Download, Globe, Moon, Sun, Monitor, Bell, LogOut, ChevronRight, Flame, Trophy, CheckCircle2, Wifi } from 'lucide-react';
 import { mockUser, badges, languages } from '@/lib/mock-data';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
+import { supabase } from '@/integrations/supabase/client';
 import i18n from '@/lib/i18n';
 import { useTheme } from '@/hooks/use-theme';
 
 const Profile = () => {
   const { t } = useTranslation();
-  const { signOut } = useAuth();
+  const { signOut, user } = useAuth();
   const navigate = useNavigate();
   const [showLanguages, setShowLanguages] = useState(false);
   const [lowData, setLowData] = useState(false);
   const { theme, setTheme } = useTheme();
+  const [profile, setProfile] = useState<any>(null);
+
+  useEffect(() => {
+    if (!user) return;
+    supabase
+      .from('profiles')
+      .select('*')
+      .eq('user_id', user.id)
+      .single()
+      .then(({ data }) => { if (data) setProfile(data); });
+  }, [user]);
+
+  const displayName = profile?.display_name || user?.user_metadata?.full_name || user?.email?.split('@')[0] || mockUser.name;
+  const avatarUrl = profile?.avatar_url || user?.user_metadata?.avatar_url || user?.user_metadata?.picture;
+  const xp = profile?.xp ?? mockUser.xp;
+  const level = profile?.level ?? mockUser.level;
+  const solved = profile?.problems_solved ?? mockUser.solved;
+  const streak = profile?.streak ?? mockUser.streak;
+  const rank = profile?.rank ?? mockUser.rank;
 
   const stats = [
-    { label: t('profile.solved'), value: mockUser.solved, icon: CheckCircle2, color: 'text-primary' },
-    { label: t('profile.rank'), value: `#${mockUser.rank}`, icon: Trophy, color: 'text-accent' },
-    { label: t('profile.streak'), value: `${mockUser.streak}d`, icon: Flame, color: 'text-streak' },
+    { label: t('profile.solved'), value: solved, icon: CheckCircle2, color: 'text-primary' },
+    { label: t('profile.rank'), value: `#${rank}`, icon: Trophy, color: 'text-accent' },
+    { label: t('profile.streak'), value: `${streak}d`, icon: Flame, color: 'text-streak' },
   ];
 
   return (
@@ -31,12 +51,16 @@ const Profile = () => {
       {/* Avatar & Info */}
       <div className="px-4 mb-6">
         <div className="flex items-center gap-4">
-          <div className="w-16 h-16 rounded-2xl bg-primary/10 flex items-center justify-center text-3xl">
-            {mockUser.avatar}
-          </div>
+          {avatarUrl ? (
+            <img src={avatarUrl} alt={displayName} className="w-16 h-16 rounded-2xl object-cover" referrerPolicy="no-referrer" />
+          ) : (
+            <div className="w-16 h-16 rounded-2xl bg-primary/10 flex items-center justify-center text-3xl">
+              {mockUser.avatar}
+            </div>
+          )}
           <div>
-            <h2 className="text-lg font-bold">{mockUser.name}</h2>
-            <p className="text-sm text-muted-foreground">{t('home.level', { level: mockUser.level })} • {mockUser.xp} XP</p>
+            <h2 className="text-lg font-bold">{displayName}</h2>
+            <p className="text-sm text-muted-foreground">{t('home.level', { level })} • {xp} XP</p>
           </div>
         </div>
       </div>
