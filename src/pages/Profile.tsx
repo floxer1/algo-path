@@ -129,7 +129,15 @@ const Profile = () => {
           </motion.div>
         ) : (
           <div className="flex items-center gap-4">
-            {avatarUrl ? (
+            {user ? (
+              <AvatarUpload
+                userId={user.id}
+                currentAvatarUrl={avatarUrl}
+                fallbackEmoji={mockUser.avatar}
+                displayName={displayName}
+                onAvatarUpdated={(url) => setProfile((p: any) => ({ ...p, avatar_url: url }))}
+              />
+            ) : avatarUrl ? (
               <img src={avatarUrl} alt={displayName} className="w-16 h-16 rounded-2xl object-cover" referrerPolicy="no-referrer" />
             ) : (
               <div className="w-16 h-16 rounded-2xl bg-primary/10 flex items-center justify-center text-3xl">
