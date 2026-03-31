@@ -1,12 +1,13 @@
 import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { motion } from 'framer-motion';
-import { leaderboardData, mockUser } from '@/lib/mock-data';
 import { Trophy, Loader2 } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
+import LeagueBadge from '@/components/LeagueBadge';
+import { getLeague, LEAGUES } from '@/lib/leagues';
 
-const tabs = ['global', 'country', 'friends'] as const;
+const tabs = ['global', 'country', 'league'] as const;
 const medalColors = ['text-league-gold', 'text-league-silver', 'text-league-bronze'];
 
 interface LeaderboardUser {
@@ -14,9 +15,11 @@ interface LeaderboardUser {
   display_name: string | null;
   avatar_url: string | null;
   xp: number;
+  weekly_xp: number;
   country: string | null;
   level: number;
   problems_solved: number;
+  league: string;
 }
 
 const Leaderboard = () => {
@@ -32,23 +35,22 @@ const Leaderboard = () => {
       setLoading(true);
       const { data, error } = await supabase
         .from('profiles')
-        .select('user_id, display_name, avatar_url, xp, country, level, problems_solved')
+        .select('user_id, display_name, avatar_url, xp, weekly_xp, country, level, problems_solved, league')
         .order('xp', { ascending: false })
         .limit(50);
 
       if (!error && data) {
-        setPlayers(data);
+        setPlayers(data as LeaderboardUser[]);
         if (user) {
-          const me = data.find(p => p.user_id === user.id);
+          const me = (data as LeaderboardUser[]).find(p => p.user_id === user.id);
           if (me) setMyProfile(me);
           else {
-            // Fetch own profile if not in top 50
             const { data: own } = await supabase
               .from('profiles')
-              .select('user_id, display_name, avatar_url, xp, country, level, problems_solved')
+              .select('user_id, display_name, avatar_url, xp, weekly_xp, country, level, problems_solved, league')
               .eq('user_id', user.id)
               .single();
-            if (own) setMyProfile(own);
+            if (own) setMyProfile(own as LeaderboardUser);
           }
         }
       }
@@ -57,8 +59,12 @@ const Leaderboard = () => {
     fetchLeaderboard();
   }, [user]);
 
+  const myLeague = myProfile ? getLeague(myProfile.weekly_xp ?? 0) : null;
+
   const filteredPlayers = activeTab === 'country' && myProfile?.country
     ? players.filter(p => p.country === myProfile.country)
+    : activeTab === 'league' && myLeague
+    ? players.filter(p => getLeague(p.weekly_xp ?? 0).tier === myLeague.tier)
     : players;
 
   const myRank = myProfile
@@ -77,6 +83,13 @@ const Leaderboard = () => {
         <p className="text-sm text-muted-foreground">{t('leaderboard.weekly')}</p>
       </header>
 
+      {/* League card */}
+      {myProfile && (
+        <div className="px-4 mb-4">
+          <LeagueBadge weeklyXp={myProfile.weekly_xp ?? 0} />
+        </div>
+      )}
+
       {/* Tabs */}
       <div className="px-4 flex gap-2 mb-4">
         {tabs.map(tab => (
@@ -89,7 +102,7 @@ const Leaderboard = () => {
                 : 'bg-secondary text-secondary-foreground'
             }`}
           >
-            {t(`leaderboard.${tab}`)}
+            {tab === 'league' ? (myLeague ? `${myLeague.emoji} ${myLeague.label}` : 'Ligue') : t(`leaderboard.${tab}`)}
           </button>
         ))}
       </div>
@@ -123,37 +136,42 @@ const Leaderboard = () => {
         ) : filteredPlayers.length === 0 ? (
           <p className="text-center text-sm text-muted-foreground py-12">Aucun joueur trouvé</p>
         ) : (
-          filteredPlayers.map((player, i) => (
-            <motion.div
-              key={player.user_id}
-              initial={{ opacity: 0, x: -5 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: i * 0.03 }}
-              className={`flex items-center gap-3 p-3 rounded-xl bg-card border border-border ${
-                player.user_id === user?.id ? 'ring-1 ring-primary/30' : ''
-              }`}
-            >
-              <div className="w-8 text-center">
-                {i < 3 ? (
-                  <Trophy size={18} className={medalColors[i]} />
-                ) : (
-                  <span className="text-sm font-bold text-muted-foreground">#{i + 1}</span>
-                )}
-              </div>
-              {player.avatar_url ? (
-                <img src={player.avatar_url} alt="" className="w-8 h-8 rounded-full object-cover" referrerPolicy="no-referrer" />
-              ) : (
-                <div className="w-8 h-8 rounded-full bg-muted flex items-center justify-center text-xs font-bold text-muted-foreground">
-                  {getInitials(player.display_name)}
+          filteredPlayers.map((player, i) => {
+            const playerLeague = getLeague(player.weekly_xp ?? 0);
+            return (
+              <motion.div
+                key={player.user_id}
+                initial={{ opacity: 0, x: -5 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: i * 0.03 }}
+                className={`flex items-center gap-3 p-3 rounded-xl bg-card border border-border ${
+                  player.user_id === user?.id ? 'ring-1 ring-primary/30' : ''
+                }`}
+              >
+                <div className="w-8 text-center">
+                  {i < 3 ? (
+                    <Trophy size={18} className={medalColors[i]} />
+                  ) : (
+                    <span className="text-sm font-bold text-muted-foreground">#{i + 1}</span>
+                  )}
                 </div>
-              )}
-              <div className="flex-1 min-w-0">
-                <p className="font-medium text-sm truncate">{player.display_name || 'Anonyme'}</p>
-                <p className="text-xs text-muted-foreground">Lvl {player.level} • {player.problems_solved} solved</p>
-              </div>
-              <span className="font-mono text-sm font-bold text-xp">{player.xp.toLocaleString()}</span>
-            </motion.div>
-          ))
+                {player.avatar_url ? (
+                  <img src={player.avatar_url} alt="" className="w-8 h-8 rounded-full object-cover" referrerPolicy="no-referrer" />
+                ) : (
+                  <div className="w-8 h-8 rounded-full bg-muted flex items-center justify-center text-xs font-bold text-muted-foreground">
+                    {getInitials(player.display_name)}
+                  </div>
+                )}
+                <div className="flex-1 min-w-0">
+                  <p className="font-medium text-sm truncate">{player.display_name || 'Anonyme'}</p>
+                  <p className="text-xs text-muted-foreground">
+                    {playerLeague.emoji} {playerLeague.label} • Lvl {player.level}
+                  </p>
+                </div>
+                <span className="font-mono text-sm font-bold text-xp">{player.xp.toLocaleString()}</span>
+              </motion.div>
+            );
+          })
         )}
       </div>
     </div>
