@@ -159,6 +159,13 @@ const Profile = () => {
         )}
       </div>
 
+      {/* League */}
+      {profile && (
+        <div className="px-4 mb-6">
+          <LeagueBadge weeklyXp={profile.weekly_xp ?? 0} />
+        </div>
+      )}
+
       {/* Stats */}
       <div className="px-4 mb-6">
         <div className="grid grid-cols-3 gap-3">
