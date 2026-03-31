@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { Settings, Download, Globe, Moon, Sun, Monitor, Bell, LogOut, ChevronRight, Flame, Trophy, CheckCircle2, Wifi, Pencil, X, Check, Loader2 } from 'lucide-react';
 import { mockUser, badges, languages } from '@/lib/mock-data';
 import { useState, useEffect } from 'react';
+import AvatarUpload from '@/components/AvatarUpload';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
@@ -128,7 +129,15 @@ const Profile = () => {
           </motion.div>
         ) : (
           <div className="flex items-center gap-4">
-            {avatarUrl ? (
+            {user ? (
+              <AvatarUpload
+                userId={user.id}
+                currentAvatarUrl={avatarUrl}
+                fallbackEmoji={mockUser.avatar}
+                displayName={displayName}
+                onAvatarUpdated={(url) => setProfile((p: any) => ({ ...p, avatar_url: url }))}
+              />
+            ) : avatarUrl ? (
               <img src={avatarUrl} alt={displayName} className="w-16 h-16 rounded-2xl object-cover" referrerPolicy="no-referrer" />
             ) : (
               <div className="w-16 h-16 rounded-2xl bg-primary/10 flex items-center justify-center text-3xl">
