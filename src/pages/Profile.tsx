@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { Settings, Download, Globe, Moon, Sun, Monitor, Bell, LogOut, ChevronRight, Flame, Trophy, CheckCircle2, Wifi, Pencil, X, Check, Loader2 } from 'lucide-react';
 import { mockUser, badges, languages } from '@/lib/mock-data';
 import { useState, useEffect } from 'react';
+import AvatarUpload from '@/components/AvatarUpload';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
