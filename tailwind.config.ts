@@ -67,6 +67,7 @@ export default {
           gold: "hsl(var(--league-gold))",
           silver: "hsl(var(--league-silver))",
           bronze: "hsl(var(--league-bronze))",
+          diamond: "hsl(var(--league-diamond))",
         },
         success: "hsl(var(--success))",
         info: "hsl(var(--info))",
