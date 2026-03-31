@@ -79,6 +79,7 @@ export type Database = {
           created_at: string
           display_name: string | null
           id: string
+          league: string
           level: number
           locale: string | null
           longest_streak: number
@@ -90,6 +91,7 @@ export type Database = {
           updated_at: string
           user_id: string
           username: string | null
+          weekly_xp: number
           xp: number
         }
         Insert: {
@@ -99,6 +101,7 @@ export type Database = {
           created_at?: string
           display_name?: string | null
           id?: string
+          league?: string
           level?: number
           locale?: string | null
           longest_streak?: number
@@ -110,6 +113,7 @@ export type Database = {
           updated_at?: string
           user_id: string
           username?: string | null
+          weekly_xp?: number
           xp?: number
         }
         Update: {
@@ -119,6 +123,7 @@ export type Database = {
           created_at?: string
           display_name?: string | null
           id?: string
+          league?: string
           level?: number
           locale?: string | null
           longest_streak?: number
@@ -130,6 +135,7 @@ export type Database = {
           updated_at?: string
           user_id?: string
           username?: string | null
+          weekly_xp?: number
           xp?: number
         }
         Relationships: []
