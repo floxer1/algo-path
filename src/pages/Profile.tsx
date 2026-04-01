@@ -161,9 +161,10 @@ const Profile = () => {
       </div>
 
       {/* League */}
-      {profile && (
+      {profile && user && (
         <div className="px-4 mb-6">
           <LeagueBadge weeklyXp={profile.weekly_xp ?? 0} />
+          <LeagueChangeOverlay weeklyXp={profile.weekly_xp ?? 0} userId={user.id} />
         </div>
       )}
 
