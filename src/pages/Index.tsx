@@ -1,7 +1,7 @@
 import { useTranslation } from 'react-i18next';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
-import { Flame, Zap, ChevronRight, Clock, BarChart3 } from 'lucide-react';
+import { Flame, Zap, ChevronRight, Clock, BarChart3, LayoutDashboard } from 'lucide-react';
 import { mockUser, learningPaths, dailyChallenge } from '@/lib/mock-data';
 import XPBar from '@/components/XPBar';
 import DifficultyBadge from '@/components/DifficultyBadge';
@@ -60,6 +60,22 @@ const Index = () => {
                 <DifficultyBadge difficulty={dailyChallenge.difficulty} />
                 <span className="text-sm font-bold">+{dailyChallenge.xp} XP</span>
               </div>
+            </div>
+          </Link>
+        </motion.div>
+
+        {/* Dashboard CTA */}
+        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }}>
+          <Link to="/dashboard" className="block">
+            <div className="bg-gradient-to-r from-primary/20 to-accent/20 border border-primary/30 rounded-2xl p-4 flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl bg-primary/20 flex items-center justify-center">
+                <LayoutDashboard size={20} className="text-primary" />
+              </div>
+              <div className="flex-1">
+                <h3 className="font-semibold text-sm">Tableau de bord</h3>
+                <p className="text-xs text-muted-foreground">Tes statistiques détaillées</p>
+              </div>
+              <ChevronRight size={16} className="text-muted-foreground" />
             </div>
           </Link>
         </motion.div>
