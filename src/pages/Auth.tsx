@@ -165,6 +165,14 @@ const Auth = () => {
             </motion.button>
           </form>
 
+          {mode === 'login' && (
+            <p className="text-center mt-3">
+              <button onClick={() => navigate('/forgot-password')} className="text-xs text-muted-foreground hover:text-primary transition-colors">
+                Mot de passe oublié ?
+              </button>
+            </p>
+          )}
+
           {/* Toggle mode */}
           <p className="text-center text-sm text-muted-foreground mt-4">
             {mode === 'login' ? "Don't have an account?" : 'Already have an account?'}{' '}
