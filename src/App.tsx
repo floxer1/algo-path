@@ -12,6 +12,7 @@ import Leaderboard from "./pages/Leaderboard";
 import Duels from "./pages/Duels";
 import Profile from "./pages/Profile";
 import Exercise from "./pages/Exercise";
+import Dashboard from "./pages/Dashboard";
 import Auth from "./pages/Auth";
 import ForgotPassword from "./pages/ForgotPassword";
 import ResetPassword from "./pages/ResetPassword";
