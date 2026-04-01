@@ -13,6 +13,8 @@ import Duels from "./pages/Duels";
 import Profile from "./pages/Profile";
 import Exercise from "./pages/Exercise";
 import Auth from "./pages/Auth";
+import ForgotPassword from "./pages/ForgotPassword";
+import ResetPassword from "./pages/ResetPassword";
 import Visualizer from "./pages/Visualizer";
 import NotFound from "./pages/NotFound";
 import BottomNav from "./components/BottomNav";
