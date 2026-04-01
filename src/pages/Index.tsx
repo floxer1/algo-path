@@ -1,7 +1,7 @@
 import { useTranslation } from 'react-i18next';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
-import { Flame, Zap, ChevronRight, Clock, BarChart3 } from 'lucide-react';
+import { Flame, Zap, ChevronRight, Clock, BarChart3, LayoutDashboard } from 'lucide-react';
 import { mockUser, learningPaths, dailyChallenge } from '@/lib/mock-data';
 import XPBar from '@/components/XPBar';
 import DifficultyBadge from '@/components/DifficultyBadge';
