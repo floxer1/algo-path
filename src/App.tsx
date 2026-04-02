@@ -31,6 +31,16 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   return <>{children}</>;
 };
 
+const LandingOrHome = () => {
+  const { user, loading } = useAuth();
+  const isStandalone = useIsStandalone();
+
+  if (loading) return <div className="min-h-screen flex items-center justify-center"><div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin" /></div>;
+  if (user) return <Index />;
+  if (isStandalone) return <Navigate to="/auth" replace />;
+  return <Landing />;
+};
+
 const AppRoutes = () => {
   const { user } = useAuth();
   useOnlineSync();
@@ -41,7 +51,7 @@ const AppRoutes = () => {
         <Route path="/auth" element={user ? <Navigate to="/" replace /> : <Auth />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/reset-password" element={<ResetPassword />} />
-        <Route path="/" element={<ProtectedRoute><Index /></ProtectedRoute>} />
+        <Route path="/" element={<LandingOrHome />} />
         <Route path="/practice" element={<ProtectedRoute><Practice /></ProtectedRoute>} />
         <Route path="/leaderboard" element={<ProtectedRoute><Leaderboard /></ProtectedRoute>} />
         <Route path="/duels" element={<ProtectedRoute><Duels /></ProtectedRoute>} />
