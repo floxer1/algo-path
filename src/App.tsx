@@ -17,8 +17,10 @@ import Auth from "./pages/Auth";
 import ForgotPassword from "./pages/ForgotPassword";
 import ResetPassword from "./pages/ResetPassword";
 import Visualizer from "./pages/Visualizer";
+import Landing from "./pages/Landing";
 import NotFound from "./pages/NotFound";
 import BottomNav from "./components/BottomNav";
+import { useIsStandalone } from "./hooks/use-standalone";
 
 const queryClient = new QueryClient();
 
