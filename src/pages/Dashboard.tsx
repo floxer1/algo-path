@@ -1,11 +1,12 @@
 import { useState, useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { motion } from 'framer-motion';
-import { ArrowLeft, Clock, Target, TrendingUp, CheckCircle2, XCircle, Code2, Flame, Zap } from 'lucide-react';
+import { ArrowLeft, Clock, Target, TrendingUp, CheckCircle2, XCircle, Code2, Flame, Zap, BarChart3, LineChart as LineChartIcon } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import LeagueBadge from '@/components/LeagueBadge';
+import { AreaChart, Area, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 
 interface ProgressRow {
   status: string;
@@ -14,6 +15,8 @@ interface ProgressRow {
   xp_earned: number;
   problem_id: string;
   language: string;
+  created_at: string;
+  solved_at: string | null;
 }
 
 interface ProblemRow {
