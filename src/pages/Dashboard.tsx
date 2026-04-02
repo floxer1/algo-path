@@ -1,11 +1,12 @@
 import { useState, useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { motion } from 'framer-motion';
-import { ArrowLeft, Clock, Target, TrendingUp, CheckCircle2, XCircle, Code2, Flame, Zap } from 'lucide-react';
+import { ArrowLeft, Clock, Target, TrendingUp, CheckCircle2, XCircle, Code2, Flame, Zap, BarChart3, LineChart as LineChartIcon } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import LeagueBadge from '@/components/LeagueBadge';
+import { AreaChart, Area, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 
 interface ProgressRow {
   status: string;
@@ -14,6 +15,8 @@ interface ProgressRow {
   xp_earned: number;
   problem_id: string;
   language: string;
+  created_at: string;
+  solved_at: string | null;
 }
 
 interface ProblemRow {
@@ -35,7 +38,7 @@ const Dashboard = () => {
   useEffect(() => {
     if (!user) return;
     Promise.all([
-      supabase.from('user_progress').select('status, attempts, time_spent_seconds, xp_earned, problem_id, language').eq('user_id', user.id),
+      supabase.from('user_progress').select('status, attempts, time_spent_seconds, xp_earned, problem_id, language, created_at, solved_at').eq('user_id', user.id),
       supabase.from('problems').select('id, category, difficulty, title'),
       supabase.from('profiles').select('*').eq('user_id', user.id).single(),
     ]).then(([progRes, probRes, profRes]) => {
@@ -92,6 +95,38 @@ const Dashboard = () => {
       langMap.set(p.language, (langMap.get(p.language) || 0) + 1);
     }
 
+    // XP per day (last 30 days)
+    const now = new Date();
+    const xpByDay: { date: string; xp: number }[] = [];
+    for (let i = 29; i >= 0; i--) {
+      const d = new Date(now);
+      d.setDate(d.getDate() - i);
+      const key = d.toISOString().slice(0, 10);
+      const dayXp = progress
+        .filter(p => p.created_at?.slice(0, 10) === key)
+        .reduce((s, p) => s + p.xp_earned, 0);
+      xpByDay.push({ date: d.toLocaleDateString('fr-FR', { day: '2-digit', month: 'short' }), xp: dayXp });
+    }
+
+    // Exercises solved per week (last 8 weeks)
+    const solvedByWeek: { week: string; count: number }[] = [];
+    for (let i = 7; i >= 0; i--) {
+      const weekStart = new Date(now);
+      weekStart.setDate(weekStart.getDate() - (i + 1) * 7);
+      const weekEnd = new Date(now);
+      weekEnd.setDate(weekEnd.getDate() - i * 7);
+      const startStr = weekStart.toISOString().slice(0, 10);
+      const endStr = weekEnd.toISOString().slice(0, 10);
+      const count = solved.filter(p => {
+        const d = (p.solved_at || p.created_at)?.slice(0, 10);
+        return d && d >= startStr && d < endStr;
+      }).length;
+      solvedByWeek.push({
+        week: `S${weekStart.toLocaleDateString('fr-FR', { day: '2-digit', month: 'short' }).replace(' ', '/')}`,
+        count,
+      });
+    }
+
     return {
       solved: solved.length,
       attempted: attempted.length,
@@ -103,6 +138,8 @@ const Dashboard = () => {
       categories: Array.from(categoryMap.entries()).map(([name, data]) => ({ name, ...data })),
       difficulties: diffMap,
       languages: Array.from(langMap.entries()).map(([lang, count]) => ({ lang, count })).sort((a, b) => b.count - a.count),
+      xpByDay,
+      solvedByWeek,
     };
   }, [progress, problems]);
 
@@ -190,6 +227,68 @@ const Dashboard = () => {
             <LeagueBadge weeklyXp={profile.weekly_xp ?? 0} />
           </motion.div>
         )}
+
+        {/* XP per day chart */}
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.18 }}
+          className="bg-card border border-border rounded-xl p-4"
+        >
+          <div className="flex items-center gap-2 mb-4">
+            <LineChartIcon size={16} className="text-primary" />
+            <h3 className="font-bold text-sm">XP par jour (30 derniers jours)</h3>
+          </div>
+          <div className="h-48">
+            <ResponsiveContainer width="100%" height="100%">
+              <AreaChart data={stats.xpByDay} margin={{ top: 5, right: 5, left: -20, bottom: 0 }}>
+                <defs>
+                  <linearGradient id="xpGradient" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor="hsl(var(--primary))" stopOpacity={0.3} />
+                    <stop offset="95%" stopColor="hsl(var(--primary))" stopOpacity={0} />
+                  </linearGradient>
+                </defs>
+                <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+                <XAxis dataKey="date" tick={{ fontSize: 10, fill: 'hsl(var(--muted-foreground))' }} interval="preserveStartEnd" />
+                <YAxis tick={{ fontSize: 10, fill: 'hsl(var(--muted-foreground))' }} />
+                <Tooltip
+                  contentStyle={{ backgroundColor: 'hsl(var(--card))', border: '1px solid hsl(var(--border))', borderRadius: 8, fontSize: 12 }}
+                  labelStyle={{ color: 'hsl(var(--foreground))' }}
+                  itemStyle={{ color: 'hsl(var(--primary))' }}
+                />
+                <Area type="monotone" dataKey="xp" stroke="hsl(var(--primary))" fill="url(#xpGradient)" strokeWidth={2} name="XP" />
+              </AreaChart>
+            </ResponsiveContainer>
+          </div>
+        </motion.div>
+
+        {/* Exercises solved per week chart */}
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.2 }}
+          className="bg-card border border-border rounded-xl p-4"
+        >
+          <div className="flex items-center gap-2 mb-4">
+            <BarChart3 size={16} className="text-green-500" />
+            <h3 className="font-bold text-sm">Exercices résolus par semaine</h3>
+          </div>
+          <div className="h-48">
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart data={stats.solvedByWeek} margin={{ top: 5, right: 5, left: -20, bottom: 0 }}>
+                <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+                <XAxis dataKey="week" tick={{ fontSize: 10, fill: 'hsl(var(--muted-foreground))' }} />
+                <YAxis tick={{ fontSize: 10, fill: 'hsl(var(--muted-foreground))' }} allowDecimals={false} />
+                <Tooltip
+                  contentStyle={{ backgroundColor: 'hsl(var(--card))', border: '1px solid hsl(var(--border))', borderRadius: 8, fontSize: 12 }}
+                  labelStyle={{ color: 'hsl(var(--foreground))' }}
+                  itemStyle={{ color: 'hsl(142, 71%, 45%)' }}
+                />
+                <Bar dataKey="count" fill="hsl(142, 71%, 45%)" radius={[4, 4, 0, 0]} name="Résolus" />
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+        </motion.div>
 
         {/* Difficulty breakdown */}
         <motion.div
