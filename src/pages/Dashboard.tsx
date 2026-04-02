@@ -95,6 +95,38 @@ const Dashboard = () => {
       langMap.set(p.language, (langMap.get(p.language) || 0) + 1);
     }
 
+    // XP per day (last 30 days)
+    const now = new Date();
+    const xpByDay: { date: string; xp: number }[] = [];
+    for (let i = 29; i >= 0; i--) {
+      const d = new Date(now);
+      d.setDate(d.getDate() - i);
+      const key = d.toISOString().slice(0, 10);
+      const dayXp = progress
+        .filter(p => p.created_at?.slice(0, 10) === key)
+        .reduce((s, p) => s + p.xp_earned, 0);
+      xpByDay.push({ date: d.toLocaleDateString('fr-FR', { day: '2-digit', month: 'short' }), xp: dayXp });
+    }
+
+    // Exercises solved per week (last 8 weeks)
+    const solvedByWeek: { week: string; count: number }[] = [];
+    for (let i = 7; i >= 0; i--) {
+      const weekStart = new Date(now);
+      weekStart.setDate(weekStart.getDate() - (i + 1) * 7);
+      const weekEnd = new Date(now);
+      weekEnd.setDate(weekEnd.getDate() - i * 7);
+      const startStr = weekStart.toISOString().slice(0, 10);
+      const endStr = weekEnd.toISOString().slice(0, 10);
+      const count = solved.filter(p => {
+        const d = (p.solved_at || p.created_at)?.slice(0, 10);
+        return d && d >= startStr && d < endStr;
+      }).length;
+      solvedByWeek.push({
+        week: `S${weekStart.toLocaleDateString('fr-FR', { day: '2-digit', month: 'short' }).replace(' ', '/')}`,
+        count,
+      });
+    }
+
     return {
       solved: solved.length,
       attempted: attempted.length,
@@ -106,6 +138,8 @@ const Dashboard = () => {
       categories: Array.from(categoryMap.entries()).map(([name, data]) => ({ name, ...data })),
       difficulties: diffMap,
       languages: Array.from(langMap.entries()).map(([lang, count]) => ({ lang, count })).sort((a, b) => b.count - a.count),
+      xpByDay,
+      solvedByWeek,
     };
   }, [progress, problems]);
 
