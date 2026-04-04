@@ -149,7 +149,7 @@ const resources = {
       duels: { title: 'Modo Duelo', findOpponent: 'Buscar oponente', waiting: 'Buscando...', vs: 'VS', timeLeft: 'Tiempo', youWon: '¡Ganaste! 🏆', youLost: '¡Más suerte la próxima!', draw: '¡Empate!' },
       profile: { title: 'Perfil', solved: 'Resueltos', rank: 'Posición', streak: 'Racha', achievements: 'Logros', settings: 'Ajustes', lowDataMode: 'Modo ahorro', language: 'Idioma', theme: 'Tema', downloadPacks: 'Descargar', offline: 'Packs offline', notifications: 'Notificaciones', logout: 'Salir' },
       exercise: { aiCoach: 'Coach IA', hint: 'Pista', explanation: 'Explicación', optimize: 'Optimización', complexity: 'Complejidad' },
-      auth: { login: 'Iniciar sesión', signup: 'Registrarse', email: 'Email', password: 'Contraseña', google: 'Continuar con Google', github: 'Continuar con GitHub', or: 'o' },
+      auth: { login: 'Iniciar sesión', signup: 'Registrarse', email: 'Email', password: 'Contraseña', google: 'Continuar con Google', apple: 'Continuar con Apple', github: 'Continuar con GitHub', or: 'o' },
       badges: { firstSolve: 'Primera solución', streak7: '7 días seguidos', streak30: '30 días seguidos', speedDemon: 'Velocista', perfectWeek: 'Semana perfecta' },
     },
   },
