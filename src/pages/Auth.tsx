@@ -136,14 +136,16 @@ const Auth = () => {
             </motion.button>
 
             <motion.button
-              onClick={handleGithubAuth}
+              onClick={handleAppleAuth}
               disabled={loading}
               className="w-full flex items-center justify-center gap-3 py-3 bg-card border border-border rounded-xl text-sm font-medium hover:bg-secondary transition-colors disabled:opacity-50"
               whileTap={{ scale: 0.98 }}
             >
-              <Github size={18} />
-              {t('auth.github')}
+              <Apple size={18} />
+              {t('auth.apple')}
             </motion.button>
+
+            <motion.button
           </div>
 
           {/* Divider */}
