@@ -90,6 +90,7 @@ const resources = {
         email: 'Email',
         password: 'Password',
         google: 'Continue with Google',
+        apple: 'Continue with Apple',
         github: 'Continue with GitHub',
         or: 'or',
       },
