@@ -65,6 +65,30 @@ const Auth = () => {
     }
   };
 
+  const handleAppleAuth = async () => {
+    setLoading(true);
+    try {
+      if (isLovableDomain) {
+        const result = await lovable.auth.signInWithOAuth('apple', {
+          redirect_uri: window.location.origin,
+        });
+        if (result.error) {
+          toast.error(result.error.message || 'Apple login failed');
+        }
+      } else {
+        const { error } = await supabase.auth.signInWithOAuth({
+          provider: 'apple',
+          options: { redirectTo: window.location.origin },
+        });
+        if (error) throw error;
+      }
+    } catch (err: any) {
+      toast.error(err.message || 'Apple login failed');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const handleGithubAuth = async () => {
     setLoading(true);
     try {
