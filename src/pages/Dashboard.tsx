@@ -27,7 +27,7 @@ interface ProblemRow {
 }
 
 const Dashboard = () => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const navigate = useNavigate();
   const { user } = useAuth();
   const [progress, setProgress] = useState<ProgressRow[]>([]);
@@ -58,12 +58,9 @@ const Dashboard = () => {
     const avgAttempts = solved.length > 0 ? (solved.reduce((s, p) => s + p.attempts, 0) / solved.length).toFixed(1) : '0';
     const totalXp = progress.reduce((sum, p) => sum + p.xp_earned, 0);
 
-    // Category breakdown
     const categoryMap = new Map<string, { total: number; solved: number; time: number }>();
     for (const prob of problems) {
-      if (!categoryMap.has(prob.category)) {
-        categoryMap.set(prob.category, { total: 0, solved: 0, time: 0 });
-      }
+      if (!categoryMap.has(prob.category)) categoryMap.set(prob.category, { total: 0, solved: 0, time: 0 });
       categoryMap.get(prob.category)!.total++;
     }
     for (const p of progress) {
@@ -75,7 +72,6 @@ const Dashboard = () => {
       }
     }
 
-    // Difficulty breakdown
     const diffMap = { easy: { total: 0, solved: 0 }, medium: { total: 0, solved: 0 }, hard: { total: 0, solved: 0 } };
     for (const prob of problems) {
       const d = prob.difficulty as keyof typeof diffMap;
@@ -89,26 +85,20 @@ const Dashboard = () => {
       }
     }
 
-    // Language breakdown
     const langMap = new Map<string, number>();
-    for (const p of progress) {
-      langMap.set(p.language, (langMap.get(p.language) || 0) + 1);
-    }
+    for (const p of progress) langMap.set(p.language, (langMap.get(p.language) || 0) + 1);
 
-    // XP per day (last 30 days)
+    const locale = i18n.language === 'fr' ? 'fr-FR' : i18n.language === 'es' ? 'es-ES' : i18n.language === 'pt' ? 'pt-BR' : 'en-US';
     const now = new Date();
     const xpByDay: { date: string; xp: number }[] = [];
     for (let i = 29; i >= 0; i--) {
       const d = new Date(now);
       d.setDate(d.getDate() - i);
       const key = d.toISOString().slice(0, 10);
-      const dayXp = progress
-        .filter(p => p.created_at?.slice(0, 10) === key)
-        .reduce((s, p) => s + p.xp_earned, 0);
-      xpByDay.push({ date: d.toLocaleDateString('fr-FR', { day: '2-digit', month: 'short' }), xp: dayXp });
+      const dayXp = progress.filter(p => p.created_at?.slice(0, 10) === key).reduce((s, p) => s + p.xp_earned, 0);
+      xpByDay.push({ date: d.toLocaleDateString(locale, { day: '2-digit', month: 'short' }), xp: dayXp });
     }
 
-    // Exercises solved per week (last 8 weeks)
     const solvedByWeek: { week: string; count: number }[] = [];
     for (let i = 7; i >= 0; i--) {
       const weekStart = new Date(now);
@@ -121,27 +111,11 @@ const Dashboard = () => {
         const d = (p.solved_at || p.created_at)?.slice(0, 10);
         return d && d >= startStr && d < endStr;
       }).length;
-      solvedByWeek.push({
-        week: `S${weekStart.toLocaleDateString('fr-FR', { day: '2-digit', month: 'short' }).replace(' ', '/')}`,
-        count,
-      });
+      solvedByWeek.push({ week: `S${weekStart.toLocaleDateString(locale, { day: '2-digit', month: 'short' }).replace(' ', '/')}`, count });
     }
 
-    return {
-      solved: solved.length,
-      attempted: attempted.length,
-      totalTime,
-      successRate,
-      totalAttempts,
-      avgAttempts,
-      totalXp,
-      categories: Array.from(categoryMap.entries()).map(([name, data]) => ({ name, ...data })),
-      difficulties: diffMap,
-      languages: Array.from(langMap.entries()).map(([lang, count]) => ({ lang, count })).sort((a, b) => b.count - a.count),
-      xpByDay,
-      solvedByWeek,
-    };
-  }, [progress, problems]);
+    return { solved: solved.length, attempted: attempted.length, totalTime, successRate, totalAttempts, avgAttempts, totalXp, categories: Array.from(categoryMap.entries()).map(([name, data]) => ({ name, ...data })), difficulties: diffMap, languages: Array.from(langMap.entries()).map(([lang, count]) => ({ lang, count })).sort((a, b) => b.count - a.count), xpByDay, solvedByWeek };
+  }, [progress, problems, i18n.language]);
 
   const formatTime = (seconds: number) => {
     if (seconds < 60) return `${seconds}s`;
@@ -160,9 +134,9 @@ const Dashboard = () => {
   }
 
   const diffColors = {
-    easy: { bar: 'bg-green-500', text: 'text-green-500', label: 'Facile' },
-    medium: { bar: 'bg-yellow-500', text: 'text-yellow-500', label: 'Moyen' },
-    hard: { bar: 'bg-red-500', text: 'text-red-500', label: 'Difficile' },
+    easy: { bar: 'bg-green-500', text: 'text-green-500', label: t('dashboard.easy') },
+    medium: { bar: 'bg-yellow-500', text: 'text-yellow-500', label: t('dashboard.medium') },
+    hard: { bar: 'bg-red-500', text: 'text-red-500', label: t('dashboard.hard') },
   };
 
   return (
@@ -171,29 +145,18 @@ const Dashboard = () => {
         <button onClick={() => navigate(-1)}>
           <ArrowLeft size={20} />
         </button>
-        <h1 className="text-xl font-bold">Tableau de bord</h1>
+        <h1 className="text-xl font-bold">{t('dashboard.title')}</h1>
       </header>
 
       <div className="px-4 space-y-5">
-        {/* Key metrics */}
-        <motion.div
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="grid grid-cols-2 gap-3"
-        >
+        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="grid grid-cols-2 gap-3">
           {[
-            { label: 'Temps total', value: formatTime(stats.totalTime), icon: Clock, color: 'text-info' },
-            { label: 'Taux de réussite', value: `${stats.successRate}%`, icon: Target, color: 'text-primary' },
-            { label: 'Exercices résolus', value: `${stats.solved}`, icon: CheckCircle2, color: 'text-green-500' },
-            { label: 'XP total', value: `${stats.totalXp}`, icon: Zap, color: 'text-xp' },
+            { label: t('dashboard.totalTime'), value: formatTime(stats.totalTime), icon: Clock, color: 'text-info' },
+            { label: t('dashboard.successRate'), value: `${stats.successRate}%`, icon: Target, color: 'text-primary' },
+            { label: t('dashboard.exercisesSolved'), value: `${stats.solved}`, icon: CheckCircle2, color: 'text-green-500' },
+            { label: t('dashboard.totalXp'), value: `${stats.totalXp}`, icon: Zap, color: 'text-xp' },
           ].map(({ label, value, icon: Icon, color }, i) => (
-            <motion.div
-              key={label}
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: 0.05 * i }}
-              className="bg-card border border-border rounded-xl p-4"
-            >
+            <motion.div key={label} initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: 0.05 * i }} className="bg-card border border-border rounded-xl p-4">
               <Icon size={18} className={`${color} mb-2`} />
               <p className="text-2xl font-bold">{value}</p>
               <p className="text-[11px] text-muted-foreground">{label}</p>
@@ -201,17 +164,11 @@ const Dashboard = () => {
           ))}
         </motion.div>
 
-        {/* Secondary stats */}
-        <motion.div
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.1 }}
-          className="grid grid-cols-3 gap-3"
-        >
+        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="grid grid-cols-3 gap-3">
           {[
-            { label: 'En cours', value: stats.attempted, icon: Code2 },
-            { label: 'Tentatives moy.', value: stats.avgAttempts, icon: TrendingUp },
-            { label: 'Streak', value: `${profile?.streak ?? 0}j`, icon: Flame },
+            { label: t('dashboard.inProgress'), value: stats.attempted, icon: Code2 },
+            { label: t('dashboard.avgAttempts'), value: stats.avgAttempts, icon: TrendingUp },
+            { label: t('dashboard.streak'), value: `${profile?.streak ?? 0}j`, icon: Flame },
           ].map(({ label, value, icon: Icon }) => (
             <div key={label} className="bg-card border border-border rounded-xl p-3 text-center">
               <Icon size={16} className="mx-auto mb-1 text-muted-foreground" />
@@ -221,23 +178,16 @@ const Dashboard = () => {
           ))}
         </motion.div>
 
-        {/* League */}
         {profile && (
           <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }}>
             <LeagueBadge weeklyXp={profile.weekly_xp ?? 0} />
           </motion.div>
         )}
 
-        {/* XP per day chart */}
-        <motion.div
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.18 }}
-          className="bg-card border border-border rounded-xl p-4"
-        >
+        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.18 }} className="bg-card border border-border rounded-xl p-4">
           <div className="flex items-center gap-2 mb-4">
             <LineChartIcon size={16} className="text-primary" />
-            <h3 className="font-bold text-sm">XP par jour (30 derniers jours)</h3>
+            <h3 className="font-bold text-sm">{t('dashboard.xpPerDay')}</h3>
           </div>
           <div className="h-48">
             <ResponsiveContainer width="100%" height="100%">
@@ -251,27 +201,17 @@ const Dashboard = () => {
                 <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
                 <XAxis dataKey="date" tick={{ fontSize: 10, fill: 'hsl(var(--muted-foreground))' }} interval="preserveStartEnd" />
                 <YAxis tick={{ fontSize: 10, fill: 'hsl(var(--muted-foreground))' }} />
-                <Tooltip
-                  contentStyle={{ backgroundColor: 'hsl(var(--card))', border: '1px solid hsl(var(--border))', borderRadius: 8, fontSize: 12 }}
-                  labelStyle={{ color: 'hsl(var(--foreground))' }}
-                  itemStyle={{ color: 'hsl(var(--primary))' }}
-                />
+                <Tooltip contentStyle={{ backgroundColor: 'hsl(var(--card))', border: '1px solid hsl(var(--border))', borderRadius: 8, fontSize: 12 }} labelStyle={{ color: 'hsl(var(--foreground))' }} itemStyle={{ color: 'hsl(var(--primary))' }} />
                 <Area type="monotone" dataKey="xp" stroke="hsl(var(--primary))" fill="url(#xpGradient)" strokeWidth={2} name="XP" />
               </AreaChart>
             </ResponsiveContainer>
           </div>
         </motion.div>
 
-        {/* Exercises solved per week chart */}
-        <motion.div
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2 }}
-          className="bg-card border border-border rounded-xl p-4"
-        >
+        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="bg-card border border-border rounded-xl p-4">
           <div className="flex items-center gap-2 mb-4">
             <BarChart3 size={16} className="text-green-500" />
-            <h3 className="font-bold text-sm">Exercices résolus par semaine</h3>
+            <h3 className="font-bold text-sm">{t('dashboard.solvedPerWeek')}</h3>
           </div>
           <div className="h-48">
             <ResponsiveContainer width="100%" height="100%">
@@ -279,25 +219,15 @@ const Dashboard = () => {
                 <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
                 <XAxis dataKey="week" tick={{ fontSize: 10, fill: 'hsl(var(--muted-foreground))' }} />
                 <YAxis tick={{ fontSize: 10, fill: 'hsl(var(--muted-foreground))' }} allowDecimals={false} />
-                <Tooltip
-                  contentStyle={{ backgroundColor: 'hsl(var(--card))', border: '1px solid hsl(var(--border))', borderRadius: 8, fontSize: 12 }}
-                  labelStyle={{ color: 'hsl(var(--foreground))' }}
-                  itemStyle={{ color: 'hsl(142, 71%, 45%)' }}
-                />
-                <Bar dataKey="count" fill="hsl(142, 71%, 45%)" radius={[4, 4, 0, 0]} name="Résolus" />
+                <Tooltip contentStyle={{ backgroundColor: 'hsl(var(--card))', border: '1px solid hsl(var(--border))', borderRadius: 8, fontSize: 12 }} labelStyle={{ color: 'hsl(var(--foreground))' }} itemStyle={{ color: 'hsl(142, 71%, 45%)' }} />
+                <Bar dataKey="count" fill="hsl(142, 71%, 45%)" radius={[4, 4, 0, 0]} name={t('dashboard.solved')} />
               </BarChart>
             </ResponsiveContainer>
           </div>
         </motion.div>
 
-        {/* Difficulty breakdown */}
-        <motion.div
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2 }}
-          className="bg-card border border-border rounded-xl p-4"
-        >
-          <h3 className="font-bold text-sm mb-3">Par difficulté</h3>
+        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="bg-card border border-border rounded-xl p-4">
+          <h3 className="font-bold text-sm mb-3">{t('dashboard.byDifficulty')}</h3>
           <div className="space-y-3">
             {(Object.entries(stats.difficulties) as [keyof typeof diffColors, { total: number; solved: number }][]).map(([diff, data]) => {
               const pct = data.total > 0 ? Math.round((data.solved / data.total) * 100) : 0;
@@ -309,12 +239,7 @@ const Dashboard = () => {
                     <span className="text-muted-foreground">{data.solved}/{data.total}</span>
                   </div>
                   <div className="h-2 rounded-full bg-muted overflow-hidden">
-                    <motion.div
-                      initial={{ width: 0 }}
-                      animate={{ width: `${pct}%` }}
-                      transition={{ duration: 0.8, ease: 'easeOut' }}
-                      className={`h-full rounded-full ${c.bar}`}
-                    />
+                    <motion.div initial={{ width: 0 }} animate={{ width: `${pct}%` }} transition={{ duration: 0.8, ease: 'easeOut' }} className={`h-full rounded-full ${c.bar}`} />
                   </div>
                 </div>
               );
@@ -322,16 +247,10 @@ const Dashboard = () => {
           </div>
         </motion.div>
 
-        {/* Category breakdown */}
-        <motion.div
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.25 }}
-          className="bg-card border border-border rounded-xl p-4"
-        >
-          <h3 className="font-bold text-sm mb-3">Progression par catégorie</h3>
+        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.25 }} className="bg-card border border-border rounded-xl p-4">
+          <h3 className="font-bold text-sm mb-3">{t('dashboard.categoryProgress')}</h3>
           {stats.categories.length === 0 ? (
-            <p className="text-xs text-muted-foreground text-center py-4">Aucune catégorie disponible</p>
+            <p className="text-xs text-muted-foreground text-center py-4">{t('dashboard.noCategory')}</p>
           ) : (
             <div className="space-y-3">
               {stats.categories.map((cat) => {
@@ -343,12 +262,7 @@ const Dashboard = () => {
                       <span className="text-muted-foreground">{cat.solved}/{cat.total} • {formatTime(cat.time)}</span>
                     </div>
                     <div className="h-2 rounded-full bg-muted overflow-hidden">
-                      <motion.div
-                        initial={{ width: 0 }}
-                        animate={{ width: `${pct}%` }}
-                        transition={{ duration: 0.8, ease: 'easeOut' }}
-                        className="h-full rounded-full bg-primary"
-                      />
+                      <motion.div initial={{ width: 0 }} animate={{ width: `${pct}%` }} transition={{ duration: 0.8, ease: 'easeOut' }} className="h-full rounded-full bg-primary" />
                     </div>
                   </div>
                 );
@@ -357,15 +271,9 @@ const Dashboard = () => {
           )}
         </motion.div>
 
-        {/* Language usage */}
         {stats.languages.length > 0 && (
-          <motion.div
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.3 }}
-            className="bg-card border border-border rounded-xl p-4"
-          >
-            <h3 className="font-bold text-sm mb-3">Langages utilisés</h3>
+          <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }} className="bg-card border border-border rounded-xl p-4">
+            <h3 className="font-bold text-sm mb-3">{t('dashboard.languagesUsed')}</h3>
             <div className="flex flex-wrap gap-2">
               {stats.languages.map(({ lang, count }) => (
                 <span key={lang} className="px-3 py-1.5 rounded-lg bg-secondary text-xs font-medium">

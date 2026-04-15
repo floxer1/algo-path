@@ -18,7 +18,6 @@ const Index = () => {
 
   return (
     <div className="min-h-screen pb-24 safe-top">
-      {/* Header */}
       <header className="px-4 pt-4 pb-2">
         <div className="flex items-center justify-between mb-3">
           <div>
@@ -40,12 +39,7 @@ const Index = () => {
       </header>
 
       <div className="px-4 space-y-5 mt-3">
-        {/* Daily Challenge */}
-        <motion.div
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.1 }}
-        >
+        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}>
           <Link to="/exercise/daily" className="block">
             <div className="bg-gradient-to-br from-primary to-primary/80 rounded-2xl p-4 text-primary-foreground">
               <div className="flex items-center justify-between mb-2">
@@ -64,7 +58,6 @@ const Index = () => {
           </Link>
         </motion.div>
 
-        {/* Dashboard CTA */}
         <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }}>
           <Link to="/dashboard" className="block">
             <div className="bg-gradient-to-r from-primary/20 to-accent/20 border border-primary/30 rounded-2xl p-4 flex items-center gap-3">
@@ -72,15 +65,14 @@ const Index = () => {
                 <LayoutDashboard size={20} className="text-primary" />
               </div>
               <div className="flex-1">
-                <h3 className="font-semibold text-sm">Tableau de bord</h3>
-                <p className="text-xs text-muted-foreground">Tes statistiques détaillées</p>
+                <h3 className="font-semibold text-sm">{t('home.dashboard')}</h3>
+                <p className="text-xs text-muted-foreground">{t('home.dashboardDesc')}</p>
               </div>
               <ChevronRight size={16} className="text-muted-foreground" />
             </div>
           </Link>
         </motion.div>
 
-        {/* Visualizer CTA */}
         <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}>
           <Link to="/visualizer" className="block">
             <div className="bg-gradient-to-r from-xp/20 to-info/20 border border-xp/30 rounded-2xl p-4 flex items-center gap-3">
@@ -88,8 +80,8 @@ const Index = () => {
                 <BarChart3 size={20} className="text-xp" />
               </div>
               <div className="flex-1">
-                <h3 className="font-semibold text-sm">Algorithm Visualizer</h3>
-                <p className="text-xs text-muted-foreground">Watch sorting algorithms in action</p>
+                <h3 className="font-semibold text-sm">{t('home.visualizer')}</h3>
+                <p className="text-xs text-muted-foreground">{t('home.visualizerDesc')}</p>
               </div>
               <ChevronRight size={16} className="text-muted-foreground" />
             </div>
@@ -103,12 +95,7 @@ const Index = () => {
           </div>
           <div className="space-y-3">
             {learningPaths.map((path, i) => (
-              <motion.div
-                key={path.id}
-                initial={{ opacity: 0, x: -10 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: 0.15 + i * 0.05 }}
-              >
+              <motion.div key={path.id} initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.15 + i * 0.05 }}>
                 <Link to={`/path/${path.id}`} className="block">
                   <div className={`bg-gradient-to-r ${pathColors[path.color]} border rounded-xl p-4 flex items-center gap-3`}>
                     <span className="text-2xl">{path.icon}</span>
@@ -116,10 +103,7 @@ const Index = () => {
                       <h3 className="font-semibold text-sm">{t(`paths.${path.id}`)}</h3>
                       <p className="text-xs text-muted-foreground mt-0.5">{t('paths.lessons', { count: path.lessons })}</p>
                       <div className="mt-2 h-1.5 bg-background/50 rounded-full overflow-hidden">
-                        <div
-                          className="h-full bg-primary rounded-full transition-all"
-                          style={{ width: `${path.progress}%` }}
-                        />
+                        <div className="h-full bg-primary rounded-full transition-all" style={{ width: `${path.progress}%` }} />
                       </div>
                       <p className="text-[10px] text-muted-foreground mt-1">{t('paths.progress', { percent: path.progress })}</p>
                     </div>

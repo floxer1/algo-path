@@ -295,7 +295,7 @@ const Practice = () => {
             </motion.div>
           ))}
           {filtered.length === 0 && (
-            <p className="text-center text-muted-foreground text-sm py-8">No problems found</p>
+            <p className="text-center text-muted-foreground text-sm py-8">{t('practice.noProblems')}</p>
           )}
         </div>
       )}
