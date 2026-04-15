@@ -1,6 +1,6 @@
 import { useTranslation } from 'react-i18next';
 import { motion } from 'framer-motion';
-import { Settings, Download, Globe, Moon, Sun, Monitor, Bell, LogOut, ChevronRight, Flame, Trophy, CheckCircle2, Wifi, Pencil, X, Check, Loader2 } from 'lucide-react';
+import { Settings, Download, Globe, Moon, Sun, Monitor, Bell, LogOut, ChevronRight, Flame, Trophy, CheckCircle2, Wifi, Pencil, X, Check, Loader2, Palette } from 'lucide-react';
 import { mockUser, badges, languages } from '@/lib/mock-data';
 import { useState, useEffect } from 'react';
 import AvatarUpload from '@/components/AvatarUpload';
@@ -10,8 +10,15 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import i18n from '@/lib/i18n';
-import { useTheme } from '@/hooks/use-theme';
+import { useTheme, type ColorTheme } from '@/hooks/use-theme';
 import { toast } from 'sonner';
+
+const colorThemes: { value: ColorTheme; label: string; colors: string[] }[] = [
+  { value: 'default', label: 'Default', colors: ['hsl(152,69%,45%)', 'hsl(38,92%,60%)'] },
+  { value: 'ocean', label: 'Ocean', colors: ['hsl(200,80%,50%)', 'hsl(180,60%,45%)'] },
+  { value: 'sunset', label: 'Sunset', colors: ['hsl(20,90%,55%)', 'hsl(340,80%,55%)'] },
+  { value: 'forest', label: 'Forest', colors: ['hsl(140,50%,40%)', 'hsl(80,50%,45%)'] },
+];
 
 const Profile = () => {
   const { t } = useTranslation();
@@ -19,7 +26,7 @@ const Profile = () => {
   const navigate = useNavigate();
   const [showLanguages, setShowLanguages] = useState(false);
   const [lowData, setLowData] = useState(false);
-  const { theme, setTheme } = useTheme();
+  const { theme, setTheme, colorTheme, setColorTheme } = useTheme();
   const [profile, setProfile] = useState<any>(null);
   const [editing, setEditing] = useState(false);
   const [editName, setEditName] = useState('');
@@ -65,12 +72,12 @@ const Profile = () => {
       .eq('user_id', user.id);
     setSaving(false);
     if (error) {
-      toast.error('Erreur lors de la sauvegarde');
+      toast.error(t('profile.saveError'));
       return;
     }
     setProfile({ ...profile, display_name: editName.trim(), bio: editBio.trim() });
     setEditing(false);
-    toast.success('Profil mis à jour');
+    toast.success(t('profile.saveSuccess'));
   };
 
   const stats = [
@@ -94,13 +101,13 @@ const Profile = () => {
             className="bg-card border border-border rounded-xl p-4 space-y-3"
           >
             <div className="flex items-center justify-between mb-1">
-              <span className="text-sm font-semibold">Modifier le profil</span>
+              <span className="text-sm font-semibold">{t('profile.editProfile')}</span>
               <button onClick={() => setEditing(false)} className="text-muted-foreground">
                 <X size={18} />
               </button>
             </div>
             <div>
-              <label className="text-xs text-muted-foreground mb-1 block">Nom d'affichage</label>
+              <label className="text-xs text-muted-foreground mb-1 block">{t('profile.displayName')}</label>
               <input
                 value={editName}
                 onChange={e => setEditName(e.target.value)}
@@ -109,14 +116,14 @@ const Profile = () => {
               />
             </div>
             <div>
-              <label className="text-xs text-muted-foreground mb-1 block">Bio</label>
+              <label className="text-xs text-muted-foreground mb-1 block">{t('profile.bio')}</label>
               <textarea
                 value={editBio}
                 onChange={e => setEditBio(e.target.value)}
                 maxLength={160}
                 rows={3}
                 className="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-ring"
-                placeholder="Décris-toi en quelques mots..."
+                placeholder={t('profile.bioPlaceholder')}
               />
               <p className="text-[10px] text-muted-foreground text-right mt-0.5">{editBio.length}/160</p>
             </div>
@@ -126,7 +133,7 @@ const Profile = () => {
               className="w-full flex items-center justify-center gap-2 py-2 rounded-lg bg-primary text-primary-foreground text-sm font-medium disabled:opacity-50"
             >
               {saving ? <Loader2 size={16} className="animate-spin" /> : <Check size={16} />}
-              Enregistrer
+              {t('profile.save')}
             </button>
           </motion.div>
         ) : (
@@ -235,6 +242,32 @@ const Profile = () => {
             </div>
           </motion.div>
         )}
+
+        {/* Color Theme Selector */}
+        <div className="w-full p-3 rounded-xl bg-card border border-border">
+          <div className="flex items-center gap-3 mb-2">
+            <Palette size={18} className="text-muted-foreground" />
+            <span className="text-sm">{t('profile.colorTheme')}</span>
+          </div>
+          <div className="flex gap-2 ml-8">
+            {colorThemes.map(ct => (
+              <button
+                key={ct.value}
+                onClick={() => setColorTheme(ct.value)}
+                className={`flex flex-col items-center gap-1 p-1.5 rounded-lg transition-all ${
+                  colorTheme === ct.value ? 'ring-2 ring-primary bg-primary/5' : 'hover:bg-secondary'
+                }`}
+              >
+                <div className="flex gap-0.5">
+                  {ct.colors.map((c, i) => (
+                    <div key={i} className="w-4 h-4 rounded-full" style={{ backgroundColor: c }} />
+                  ))}
+                </div>
+                <span className="text-[9px] text-muted-foreground font-medium">{ct.label}</span>
+              </button>
+            ))}
+          </div>
+        </div>
 
         {/* Theme Selector */}
         <div className="w-full p-3 rounded-xl bg-card border border-border">

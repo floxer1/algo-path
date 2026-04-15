@@ -1,11 +1,13 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { Mail, Loader2, ArrowLeft } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 const ForgotPassword = () => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [email, setEmail] = useState('');
   const [loading, setLoading] = useState(false);
@@ -21,7 +23,7 @@ const ForgotPassword = () => {
       if (error) throw error;
       setSent(true);
     } catch (err: any) {
-      toast.error(err.message || 'Erreur lors de l\'envoi');
+      toast.error(err.message || t('forgotPassword.sendError'));
     } finally {
       setLoading(false);
     }
@@ -41,10 +43,8 @@ const ForgotPassword = () => {
             <div className="w-16 h-16 rounded-2xl bg-primary/10 flex items-center justify-center text-3xl mx-auto mb-3">
               📧
             </div>
-            <h1 className="text-2xl font-bold">Mot de passe oublié</h1>
-            <p className="text-sm text-muted-foreground mt-1">
-              Entrez votre email pour recevoir un lien de réinitialisation
-            </p>
+            <h1 className="text-2xl font-bold">{t('forgotPassword.title')}</h1>
+            <p className="text-sm text-muted-foreground mt-1">{t('forgotPassword.desc')}</p>
           </div>
 
           {sent ? (
@@ -53,11 +53,11 @@ const ForgotPassword = () => {
                 <Mail size={24} className="text-green-500" />
               </div>
               <p className="text-sm text-muted-foreground">
-                Un email a été envoyé à <strong className="text-foreground">{email}</strong>.<br />
-                Vérifiez votre boîte de réception.
+                {t('forgotPassword.emailSent')} <strong className="text-foreground">{email}</strong>.<br />
+                {t('forgotPassword.checkInbox')}
               </p>
               <button onClick={() => navigate('/auth')} className="text-primary font-medium text-sm">
-                Retour à la connexion
+                {t('forgotPassword.backToLogin')}
               </button>
             </div>
           ) : (
@@ -68,7 +68,7 @@ const ForgotPassword = () => {
                   type="email"
                   value={email}
                   onChange={e => setEmail(e.target.value)}
-                  placeholder="Votre adresse email"
+                  placeholder={t('forgotPassword.emailPlaceholder')}
                   required
                   className="w-full pl-10 pr-4 py-3 bg-secondary rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/50"
                 />
@@ -80,7 +80,7 @@ const ForgotPassword = () => {
                 whileTap={{ scale: 0.98 }}
               >
                 {loading && <Loader2 size={16} className="animate-spin" />}
-                Envoyer le lien
+                {t('forgotPassword.sendLink')}
               </motion.button>
             </form>
           )}
