@@ -13,6 +13,7 @@ interface AvatarUploadProps {
 }
 
 const AvatarUpload = ({ userId, currentAvatarUrl, fallbackEmoji, displayName, onAvatarUpdated }: AvatarUploadProps) => {
+  const { t } = useTranslation();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [uploading, setUploading] = useState(false);
 
@@ -21,11 +22,11 @@ const AvatarUpload = ({ userId, currentAvatarUrl, fallbackEmoji, displayName, on
     if (!file) return;
 
     if (!file.type.startsWith('image/')) {
-      toast.error('Seules les images sont acceptées');
+      toast.error(t('common.onlyImages'));
       return;
     }
     if (file.size > 2 * 1024 * 1024) {
-      toast.error('Image trop lourde (max 2 Mo)');
+      toast.error(t('common.imageTooLarge'));
       return;
     }
 
@@ -54,10 +55,10 @@ const AvatarUpload = ({ userId, currentAvatarUrl, fallbackEmoji, displayName, on
       if (updateError) throw updateError;
 
       onAvatarUpdated(avatarUrl);
-      toast.success('Avatar mis à jour');
+      toast.success(t('common.avatarUpdated'));
     } catch (err: any) {
       console.error(err);
-      toast.error('Erreur lors du téléchargement');
+      toast.error(t('common.uploadError'));
     } finally {
       setUploading(false);
       if (fileInputRef.current) fileInputRef.current.value = '';
