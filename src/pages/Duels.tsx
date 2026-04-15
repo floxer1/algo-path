@@ -37,7 +37,7 @@ const Duels = () => {
               </motion.div>
               <h2 className="text-lg font-bold mb-2">{t('duels.title')}</h2>
               <p className="text-sm text-muted-foreground mb-6 max-w-xs">
-                Challenge another developer to solve the same problem. Fastest correct solution wins!
+                {t('duels.desc')}
               </p>
               <motion.button
                 onClick={startSearch}
@@ -98,7 +98,7 @@ const Duels = () => {
               </div>
 
               <div className="bg-card border border-border rounded-xl p-4 mb-4">
-                <p className="text-xs text-muted-foreground uppercase tracking-wider mb-1">Problem</p>
+                <p className="text-xs text-muted-foreground uppercase tracking-wider mb-1">{t('duels.problem')}</p>
                 <h3 className="font-bold">Two Sum</h3>
                 <div className="flex items-center justify-between mt-2">
                   <span className="px-2 py-0.5 rounded-full text-xs font-semibold bg-primary/15 text-primary">Easy</span>
@@ -114,7 +114,7 @@ const Duels = () => {
                 whileTap={{ scale: 0.95 }}
                 onClick={() => setState('idle')}
               >
-                Start Duel
+                {t('duels.startDuel')}
               </motion.button>
             </motion.div>
           )}

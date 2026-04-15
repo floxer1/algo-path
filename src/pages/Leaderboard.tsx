@@ -134,7 +134,7 @@ const Leaderboard = () => {
             <Loader2 className="animate-spin text-muted-foreground" size={24} />
           </div>
         ) : filteredPlayers.length === 0 ? (
-          <p className="text-center text-sm text-muted-foreground py-12">Aucun joueur trouvé</p>
+          <p className="text-center text-sm text-muted-foreground py-12">{t('leaderboard.noPlayers')}</p>
         ) : (
           filteredPlayers.map((player, i) => {
             const playerLeague = getLeague(player.weekly_xp ?? 0);

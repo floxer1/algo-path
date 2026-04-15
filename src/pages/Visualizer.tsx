@@ -94,7 +94,7 @@ const Visualizer = () => {
         <button onClick={() => navigate(-1)}>
           <ArrowLeft size={20} />
         </button>
-        <h1 className="text-sm font-bold">Algorithm Visualizer</h1>
+        <h1 className="text-sm font-bold">{t('visualizer.title')}</h1>
       </header>
 
       <div className="px-4 py-4 space-y-4">
@@ -204,7 +204,7 @@ const Visualizer = () => {
             whileTap={{ scale: 0.95 }}
           >
             <RotateCcw size={12} />
-            New Array
+            {t('visualizer.newArray')}
           </motion.button>
         </div>
       </div>
