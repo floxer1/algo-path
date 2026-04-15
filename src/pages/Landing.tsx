@@ -270,6 +270,21 @@ const Landing = () => {
           </motion.div>
         </div>
       </section>
+
+      {/* Footer */}
+      <footer className="px-4 py-6 text-center text-sm text-muted-foreground">
+        <p>
+          © {new Date().getFullYear()} AlgoTrainer · Conçu par{' '}
+          <a
+            href="https://www.smartsolution-it.com/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="hover:text-foreground transition-colors underline underline-offset-2"
+          >
+            Smart Solution IT
+          </a>
+        </p>
+      </footer>
     </div>
   );
 };
