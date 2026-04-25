@@ -321,6 +321,14 @@ const Profile = () => {
           <ChevronRight size={16} className="text-muted-foreground" />
         </button>
 
+        {/* Security status */}
+        <div className="pt-2">
+          <h2 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-2 px-1">
+            {t('security.sectionTitle')}
+          </h2>
+          <PasswordProtectionStatus />
+        </div>
+
         {/* Logout */}
         <button onClick={async () => { await signOut(); navigate('/auth'); }} className="w-full flex items-center gap-3 p-3 rounded-xl bg-card border border-border text-destructive">
           <LogOut size={18} />
