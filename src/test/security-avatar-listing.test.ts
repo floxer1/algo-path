@@ -85,8 +85,9 @@ describe("Security: avatars are publicly readable but not enumerable", () => {
       expect(Array.isArray(body)).toBe(true);
       expect(body.length).toBe(0);
     } else {
-      // 401/403/404 are all acceptable — what matters is "no rows leaked".
-      expect([401, 403, 404]).toContain(res.status);
+      // 401/403/404 = blocked. 406 = `storage` schema not exposed at all
+      // through PostgREST (an even stronger guarantee). All are fine.
+      expect([401, 403, 404, 406]).toContain(res.status);
     }
   }, NET_TIMEOUT);
 
