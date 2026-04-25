@@ -39,7 +39,7 @@ const Dashboard = () => {
     if (!user) return;
     Promise.all([
       supabase.from('user_progress').select('status, attempts, time_spent_seconds, xp_earned, problem_id, language, created_at, solved_at').eq('user_id', user.id),
-      supabase.from('problems').select('id, category, difficulty, title'),
+      (supabase as any).from('problems_public').select('id, category, difficulty, title'),
       supabase.from('profiles').select('*').eq('user_id', user.id).single(),
     ]).then(([progRes, probRes, profRes]) => {
       setProgress(progRes.data || []);

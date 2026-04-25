@@ -22,15 +22,15 @@ export function useProblems() {
     queryKey: ['problems'],
     queryFn: async (): Promise<Problem[]> => {
       // Try network first
-      const { data, error } = await supabase
-        .from('problems_public' as any)
+      const { data, error } = await (supabase as any)
+        .from('problems_public')
         .select('*')
         .order('sort_order');
 
       if (!error && data) {
         // Cache for offline use
-        cacheProblems(data).catch(console.warn);
-        return data;
+        cacheProblems(data as Problem[]).catch(console.warn);
+        return data as Problem[];
       }
 
       // Fall back to cache
@@ -47,13 +47,13 @@ export function useProblem(id: string) {
   return useQuery({
     queryKey: ['problem', id],
     queryFn: async (): Promise<Problem> => {
-      const { data, error } = await supabase
-        .from('problems_public' as any)
+      const { data, error } = await (supabase as any)
+        .from('problems_public')
         .select('*')
         .eq('id', id)
         .single();
 
-      if (!error && data) return data;
+      if (!error && data) return data as Problem;
 
       const cached = await getCachedProblem(id);
       if (cached) return cached;
