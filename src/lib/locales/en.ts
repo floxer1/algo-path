@@ -211,6 +211,25 @@ const en = {
     avatarUpdated: 'Avatar updated',
     uploadError: 'Error uploading',
   },
+  security: {
+    sectionTitle: 'Security',
+    hibp: {
+      enabledTitle: 'Leaked password protection enabled',
+      enabledDesc: 'New passwords are checked against the HaveIBeenPwned database.',
+      disabledTitle: 'Leaked password protection disabled',
+      disabledDesc: 'Your users can pick a password that has already been exposed in a public breach. Enable this protection as soon as possible.',
+      unknownTitle: 'Protection status unknown',
+      unknownDesc: 'Check whether leaked password protection (HIBP) is enabled for your project.',
+      howTitle: 'How to enable it:',
+      step1: 'Open Cloud → Users → Auth Settings (gear icon).',
+      step2: '"Email settings" section.',
+      step3: 'Toggle on "Password HIBP Check".',
+      docs: 'Read the docs',
+      markEnabled: 'I enabled it',
+      markDisabled: 'Mark as disabled',
+      notYet: 'Not enabled yet',
+    },
+  },
 };
 
 export default en;
