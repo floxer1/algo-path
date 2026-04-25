@@ -23,7 +23,7 @@ export function useProblems() {
     queryFn: async (): Promise<Problem[]> => {
       // Try network first
       const { data, error } = await supabase
-        .from('problems')
+        .from('problems_public' as any)
         .select('*')
         .order('sort_order');
 
@@ -48,7 +48,7 @@ export function useProblem(id: string) {
     queryKey: ['problem', id],
     queryFn: async (): Promise<Problem> => {
       const { data, error } = await supabase
-        .from('problems')
+        .from('problems_public' as any)
         .select('*')
         .eq('id', id)
         .single();
