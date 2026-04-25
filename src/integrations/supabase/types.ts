@@ -191,14 +191,74 @@ export type Database = {
             referencedRelation: "problems"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "user_progress_problem_id_fkey"
+            columns: ["problem_id"]
+            isOneToOne: false
+            referencedRelation: "problems_public"
+            referencedColumns: ["id"]
+          },
         ]
       }
     }
     Views: {
-      [_ in never]: never
+      problems_public: {
+        Row: {
+          category: string | null
+          created_at: string | null
+          description: string | null
+          difficulty: Database["public"]["Enums"]["difficulty_level"] | null
+          hints: string[] | null
+          id: string | null
+          learning_path: string | null
+          slug: string | null
+          sort_order: number | null
+          starter_code: Json | null
+          tags: string[] | null
+          test_cases: Json | null
+          title: string | null
+          updated_at: string | null
+          xp: number | null
+        }
+        Insert: {
+          category?: string | null
+          created_at?: string | null
+          description?: string | null
+          difficulty?: Database["public"]["Enums"]["difficulty_level"] | null
+          hints?: string[] | null
+          id?: string | null
+          learning_path?: string | null
+          slug?: string | null
+          sort_order?: number | null
+          starter_code?: Json | null
+          tags?: string[] | null
+          test_cases?: Json | null
+          title?: string | null
+          updated_at?: string | null
+          xp?: number | null
+        }
+        Update: {
+          category?: string | null
+          created_at?: string | null
+          description?: string | null
+          difficulty?: Database["public"]["Enums"]["difficulty_level"] | null
+          hints?: string[] | null
+          id?: string | null
+          learning_path?: string | null
+          slug?: string | null
+          sort_order?: number | null
+          starter_code?: Json | null
+          tags?: string[] | null
+          test_cases?: Json | null
+          title?: string | null
+          updated_at?: string | null
+          xp?: number | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
-      [_ in never]: never
+      get_problem_solution: { Args: { _problem_id: string }; Returns: Json }
     }
     Enums: {
       difficulty_level: "easy" | "medium" | "hard"
