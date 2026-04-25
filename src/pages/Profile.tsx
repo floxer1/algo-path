@@ -6,6 +6,7 @@ import { useState, useEffect } from 'react';
 import AvatarUpload from '@/components/AvatarUpload';
 import LeagueBadge from '@/components/LeagueBadge';
 import LeagueChangeOverlay from '@/components/LeagueChangeOverlay';
+import PasswordProtectionStatus from '@/components/PasswordProtectionStatus';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
@@ -320,6 +321,14 @@ const Profile = () => {
           <span className="flex-1 text-left text-sm">{t('profile.notifications')}</span>
           <ChevronRight size={16} className="text-muted-foreground" />
         </button>
+
+        {/* Security status */}
+        <div className="pt-2">
+          <h2 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-2 px-1">
+            {t('security.sectionTitle')}
+          </h2>
+          <PasswordProtectionStatus />
+        </div>
 
         {/* Logout */}
         <button onClick={async () => { await signOut(); navigate('/auth'); }} className="w-full flex items-center gap-3 p-3 rounded-xl bg-card border border-border text-destructive">

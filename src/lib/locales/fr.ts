@@ -211,6 +211,25 @@ const fr = {
     avatarUpdated: 'Avatar mis à jour',
     uploadError: 'Erreur lors du téléchargement',
   },
+  security: {
+    sectionTitle: 'Sécurité',
+    hibp: {
+      enabledTitle: 'Protection des mots de passe compromis activée',
+      enabledDesc: 'Les nouveaux mots de passe sont vérifiés contre la base HaveIBeenPwned.',
+      disabledTitle: 'Protection des mots de passe compromis désactivée',
+      disabledDesc: 'Vos utilisateurs peuvent choisir un mot de passe déjà divulgué dans une fuite publique. Activez cette protection au plus vite.',
+      unknownTitle: 'État de la protection inconnu',
+      unknownDesc: 'Vérifiez si la protection contre les mots de passe compromis (HIBP) est activée pour votre projet.',
+      howTitle: 'Comment l\'activer :',
+      step1: 'Ouvrez Cloud → Users → Auth Settings (icône engrenage).',
+      step2: 'Section « Email settings ».',
+      step3: 'Activez l\'interrupteur « Password HIBP Check ».',
+      docs: 'Voir la documentation',
+      markEnabled: 'Je l\'ai activée',
+      markDisabled: 'Marquer comme désactivée',
+      notYet: 'Pas encore activée',
+    },
+  },
 };
 
 export default fr;
